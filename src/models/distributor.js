@@ -7,8 +7,11 @@ async function getAll() {}
 async function getById(userId) {
   return await db.collection(collectionName).doc(userId).get();
 }
-async function registration(data) {
-  return await db.collection(collectionName).doc().set(data, { merge: true });
+async function registration(distributorId, data) {
+  return await db
+    .collection(collectionName)
+    .doc(distributorId)
+    .set(data, { merge: true });
 }
 
 async function createBook(distributorId, data) {

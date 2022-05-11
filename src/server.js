@@ -27,6 +27,7 @@ const distributorRouter = require("./routes/distributor");
 // }
 
 // API
+app.use(`${API_PATH}/site/`, siteRouter);
 app.use(`${API_PATH}/users/`, userRouter);
 app.use(`${API_PATH}/distributors/`, distributorRouter);
 app.get("/", (req, res) => {
