@@ -2,6 +2,8 @@ FROM node:16.15.0
 
 WORKDIR /usr/src/app
 
+ENV  NODE_ENV = Production
+
 COPY package*.json ./
 
 COPY [".env", "./.env"]

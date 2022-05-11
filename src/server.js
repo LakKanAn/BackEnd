@@ -19,7 +19,7 @@ app.use(
 const siteRouter = require("./routes/site");
 const userRouter = require("./routes/user");
 const distributorRouter = require("./routes/distributor");
-///docs API
+//docs API
 // if (process.env.NODE_ENV != "production") {
 //   const swaggerUi = require("swagger-ui-express");
 //   const swaggerSpec = require("./docs/swagger");
