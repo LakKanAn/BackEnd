@@ -8,7 +8,6 @@ exports.access_token = async (req, res, next) => {
   if (token !== undefined) {
     try {
       const user = await admin.auth().verifyIdToken(token);
-      console.log(user);
       delete user.firebase;
       delete user.exp;
       delete user.iat;
@@ -28,26 +27,16 @@ exports.access_token = async (req, res, next) => {
 };
 exports.me = async (req, res, next) => {
   const authorization = req.headers["authorization"];
-  // console.log(authorization);
   try {
     const access_token = authorization.split(" ")[1];
     try {
-      // const tmpUser = jwt.verify(access_token, SECRET);
-      const tmpUser = await admin.auth().verifyIdToken(access_token);
-      // console.log(tmpUser);
+      const tmpUser = jwt.verify(access_token, SECRET);
+      console.log(tmpUser);
       const user = await admin.auth().getUser(tmpUser.uid);
-      console.log(user);
-      console.log("run");
-      // user.email
-      // user.displayName
-      if (user.customClaims.admin != true) {
-        res.status(401).json({ status: 401, message: "Unauthorized" });
-      }
       const userData = {
+        uid: user.uid,
         email: user.email,
         displayName: user.displayName,
-        admin: user.customClaims.admin,
-        accessLevel: user.customClaims.accessLevel,
       };
       res.status(200).json({ status: 200, user: userData });
     } catch (err) {
