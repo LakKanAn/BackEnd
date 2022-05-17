@@ -31,7 +31,6 @@ exports.me = async (req, res, next) => {
     const access_token = authorization.split(" ")[1];
     try {
       const tmpUser = jwt.verify(access_token, SECRET);
-      console.log(tmpUser);
       const user = await admin.auth().getUser(tmpUser.uid);
       const userData = {
         uid: user.uid,
