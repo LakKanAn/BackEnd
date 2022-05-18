@@ -1,0 +1,23 @@
+name: deploy-prd
+on:
+  workflow_dispatch:
+    inputs:
+      deploy-version:
+        description: 'Version to deploy'
+        required: true
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      # - name: deploy with Execute SSH commmands on remote server
+      #   uses: JimCronqvist/action-ssh@0.1.1
+      #   with:
+      #     hosts: ${{ secrets.SSH_HOST }}
+      #     privateKey: ${{ secrets.PRIVATE_KEY }}
+      #     command: |
+      #       docker pull ghcr.io/LakKanAn/BackEnd:${{ env.ENV_NAME }}
+      #       docker rmi $(docker images | grep "<none>" | awk '{print $3}')
+      #       docker-compose -f ~/docker-compose/app-compose.yml down
+      #       docker-compose -f ~/docker-compose/app-compose.yml up -d

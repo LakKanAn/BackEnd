@@ -1,3 +1,4 @@
 **/node_modules
 .env
 .sarif
+**/db/lankkanan-firebase-adminsdk-onzw5-36d028e92b.json
