@@ -5,18 +5,37 @@ const subCollectionName = "certs";
 async function getAll() {}
 
 async function getById(userId) {
-  return await (await db.collection(collectionName).doc(userId).get()).data();
+  try {
+    const user = await (
+      await db.collection(collectionName).doc(userId).get()
+    ).data();
+    return user;
+  } catch (err) {
+    return null;
+  }
 }
 
 async function registration(userId, data) {
-  return await db
-    .collection(collectionName)
-    .doc(userId)
-    .set(data, { merge: true });
+  try {
+    const newUser = await db.collection(collectionName).doc(userId);
+    data.userId = newUser.id;
+    newUser.set(data, { merge: true });
+    return data;
+  } catch (err) {
+    return null;
+  }
 }
 
 async function updateUser(data) {
-  return await db.collection(collectionName).doc(userId).update(data);
+  try {
+    await db
+      .collection(collectionName)
+      .doc(userId)
+      .update(data, { merge: true });
+    return data;
+  } catch (err) {
+    return null;
+  }
 }
 
 module.exports = {
