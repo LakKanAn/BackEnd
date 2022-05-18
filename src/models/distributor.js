@@ -12,7 +12,18 @@ async function getById(distributorId) {
     return distributor;
   } catch (err) {}
 }
-
+async function checkDistributor(email) {
+  try {
+    const user = await db
+      .collection(collectionName)
+      .where("email", "==", email)
+      .get();
+    return user;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+}
 async function registration(distributorId, data) {
   try {
     await db
@@ -28,5 +39,6 @@ async function registration(distributorId, data) {
 module.exports = {
   getAll,
   getById,
+  checkDistributor,
   registration,
 };

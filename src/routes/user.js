@@ -5,6 +5,8 @@ const isAuth = require("../middlewares/auth");
 //loading Controller
 const userController = require("../controllers/userController");
 
-router.post("/login", userController.registration);
+router.get("/check", userController.checkUser);
+
+router.post("/registration", userController.registration);
 
 module.exports = router;

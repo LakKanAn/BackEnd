@@ -1,6 +1,7 @@
+const e = require("express");
 const { db } = require("../../db/db");
 const collectionName = "users";
-const subCollectionName = "certs";
+const subCollectionName = "bookshelf";
 
 async function getAll() {}
 
@@ -11,6 +12,19 @@ async function getById(userId) {
     ).data();
     return user;
   } catch (err) {
+    return null;
+  }
+}
+
+async function checkUser(email) {
+  try {
+    const user = await db
+      .collection(collectionName)
+      .where("email", "==", email)
+      .get();
+    return user;
+  } catch (err) {
+    console.log(err);
     return null;
   }
 }
@@ -41,6 +55,7 @@ async function updateUser(data) {
 module.exports = {
   getAll,
   getById,
+  checkUser,
   registration,
   updateUser,
 };

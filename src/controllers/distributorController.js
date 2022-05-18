@@ -2,6 +2,24 @@ const { firestore } = require("../../db/db");
 const distributorModel = require("../models/distributor");
 const bookModel = require("../models/books");
 
+exports.checkDistributor = async (req, res, next) => {
+  try {
+    const email = req.body.email;
+    const checkDistributor = await distributorModel.checkDistributor(email);
+    if (checkDistributor.empty) {
+      res.status(404).json({ status: 404, hasDistributor: false });
+    } else {
+      res.status(200).json({ status: 200, hasDistributor: true });
+    }
+  } catch (error) {
+    console.log(error);
+    if (!error.statusCode) {
+      error.statusCode = 404;
+    }
+    next(error);
+  }
+};
+
 exports.registration = async (req, res, next) => {
   try {
     const distributorId = req.body.distributorId;

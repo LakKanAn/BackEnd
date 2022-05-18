@@ -5,7 +5,8 @@ const distributorController = require("../controllers/distributorController");
 const bookController = require("../controllers/bookController");
 
 ////distributor
-router.post("/login", distributorController.registration);
+router.get("/check", distributorController.checkDistributor);
+router.post("/registration", distributorController.registration);
 
 ////book manage
 router.get("/books", isAuth, distributorController.getAll);
