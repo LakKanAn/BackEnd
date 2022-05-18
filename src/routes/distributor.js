@@ -7,11 +7,11 @@ const bookController = require("../controllers/bookController");
 ////distributor
 router.post("/login", distributorController.registration);
 
-////book
-router.get("/books", isAuth, bookController.getAll);
-router.post("/books", isAuth, bookController.create);
-router.get("/books/:bookId", isAuth, bookController.getById);
-router.post("/books/:bookId", isAuth, bookController.update);
-router.delete("/books/:bookId", isAuth, bookController.delete);
+////book manage
+router.get("/books", isAuth, distributorController.getAll);
+router.post("/books", isAuth, distributorController.create);
+router.get("/books/:bookId", isAuth, distributorController.getById);
+router.post("/books/:bookId", isAuth, distributorController.update);
+router.delete("/books/:bookId", isAuth, distributorController.delete);
 
 module.exports = router;

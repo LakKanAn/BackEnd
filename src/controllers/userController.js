@@ -6,9 +6,12 @@ exports.registration = async (req, res, next) => {
     const userId = req.body.userId;
     const displayName = req.body.displayName;
     const email = req.body.email;
-    data = {};
+    const joinAt = firestore.FieldValue.serverTimestamp();
+    const data = {};
     data.email = email;
     data.displayName = displayName;
+    data.joinAt = joinAt;
+    gender;
     const registration = await userModel.registration(userId, data);
     res.status(201).json({
       status: 200,
@@ -23,10 +26,12 @@ exports.registration = async (req, res, next) => {
   }
 };
 
-exports.me = async (req, res, next) => {
+exports.update = async (req, res, next) => {
   try {
     const userId = req.userId;
-    const userInfo = await userModel.getById(userId);
+    const getById = await userModel.getById(userId);
+
+    const userInfo = await userModel.updateUser(userId);
     res.status(201).json({
       status: 200,
       user: userInfo,
