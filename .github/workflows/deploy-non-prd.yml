@@ -53,12 +53,12 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/LakKanAn/BackEnd:${{ env.ENV_NAME }}
+          tags: ghcr.io/lakkanan/backend:${{ env.ENV_NAME }}
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'ghcr.io/LakKanAn/BackEnd:${{ env.ENV_NAME }}'
+          image-ref: 'ghcr.io/lakkanan/backend:${{ env.ENV_NAME }}'
           format: 'sarif'
           output: 'trivy-results.sarif'
 
@@ -84,7 +84,7 @@ jobs:
       #     hosts: ${{ secrets.SSH_HOST }}
       #     privateKey: ${{ secrets.PRIVATE_KEY }}
       #     command: |
-      #       docker pull ghcr.io/LakKanAn/BackEnd:${{ env.ENV_NAME }}
+      #       docker pull ghcr.io/lakkanan/backend:${{ env.ENV_NAME }}
       #       docker rmi $(docker images | grep "<none>" | awk '{print $3}')
       #       docker-compose -f ~/docker-compose/app-compose.yml down
       #       docker-compose -f ~/docker-compose/app-compose.yml up -d
