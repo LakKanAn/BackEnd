@@ -11,13 +11,41 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      # - name: deploy with Execute SSH commmands on remote server
-      #   uses: JimCronqvist/action-ssh@0.1.1
-      #   with:
-      #     hosts: ${{ secrets.SSH_HOST }}
-      #     privateKey: ${{ secrets.PRIVATE_KEY }}
-      #     command: |
-      #       docker pull ghcr.io/LakKanAn/BackEnd:${{ env.ENV_NAME }}
-      #       docker rmi $(docker images | grep "<none>" | awk '{print $3}')
-      #       docker-compose -f ~/docker-compose/app-compose.yml down
-      #       docker-compose -f ~/docker-compose/app-compose.yml up -d
+      - name: SSH Remote Commands
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          script: |
+            docker pull ghcr.io/lakkanan/backend:${{ github.event.inputs.deploy-version }}
+            sed -i 's/backend:\w+/backend:${{ github.event.inputs.deploy-version }}/g' app-compose.yml
+            docker rmi $(docker images | grep "<none>" | awk '{print $3}')
+            docker-compose -f ~/docker-compose/app-compose.yml down
+            docker-compose -f ~/docker-compose/app-compose.yml up -d
+
+  acceptance-testing:
+    needs: deploy
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Set env
+        run: echo "ENV_NAME=$( [ $GITHUB_REF == "refs/heads/master" ] && echo 'uat' || echo ${GITHUB_REF##*/} )" >> $GITHUB_ENV
+      - name: acceptance test
+        run: curl https://api.lakkanan.shop | grep "/v1 is ready" && echo $?
+
+  security-testing:
+    needs: deploy
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Set env
+        run: echo "ENV_NAME=$( [ "$GITHUB_REF" == "refs/heads/main" ] && echo 'uat' || echo ${GITHUB_REF##*/} )" >> $GITHUB_ENV
+
+      - name: OWASP ZAP API Scan
+        uses: zaproxy/action-api-scan@v0.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: 'owasp/zap2docker-stable'
+          target: 'https://api.lakkanan.shop'

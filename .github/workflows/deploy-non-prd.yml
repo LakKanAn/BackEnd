@@ -3,13 +3,31 @@ on:
   push:
     branches:
       - dev
-      - main
+
 jobs:
-  code-scan:
+  code-testing:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+#       - name: Install modules
+#         run: npm install
+
+#       - name: Create .env file
+#         run: echo $FILE_CONTENT >> .env
+#         shell: bash
+#         env:
+#           FILE_CONTENT : ${{secrets.ENV_FILE_CONTENT}}
+          
+#       - name: Create firebase auth file
+#         run: echo $FILE_CONTENT >> firebase_auth.json
+#         shell: bash
+#         env:
+#           FILE_CONTENT : ${{secrets.FB_FILE_CONTENT}}
+
+#       - name: Run Test
+#         run: npm test --collectCoverage
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v1.6
@@ -39,15 +57,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          
-      # - name: create env file
-      #   run: |
-      #     touch .env
-      #     echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
-      #     echo API_PORT=${{ secrets.API_PORT }} >> .env
-      #     echo TOKEN=${{ secrets.TOKEN }} >> .env
-      #     echo ORIGIN=${{ secrets.ORIGIN }} >> .env
-          
+
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
@@ -93,7 +103,16 @@ jobs:
             docker-compose -f ~/docker-compose/dev-app-compose.yml down
             docker-compose -f ~/docker-compose/dev-app-compose.yml up -d
 
-  test:
+  acceptance-testing:
+    needs: deploy
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Set env
+        run: echo "ENV_NAME=$( [ $GITHUB_REF == "refs/heads/master" ] && echo 'uat' || echo ${GITHUB_REF##*/} )" >> $GITHUB_ENV
+      - name: acceptance test
+        run: curl https://api${{ env.ENV_NAME }}.lakkanan.shop | grep "/v1 is ready" && echo $?
+
+  security-testing:
     needs: deploy
     runs-on: ubuntu-20.04
     steps:
@@ -103,8 +122,9 @@ jobs:
       - name: Set env
         run: echo "ENV_NAME=$( [ "$GITHUB_REF" == "refs/heads/main" ] && echo 'uat' || echo ${GITHUB_REF##*/} )" >> $GITHUB_ENV
 
-      # - name: OWASP ZAP Baseline Scan
-      #   uses: zaproxy/action-baseline@v0.4.0
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     target: 'https://api.blackcarrack.tech'
+      - name: OWASP ZAP API Scan
+        uses: zaproxy/action-api-scan@v0.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: 'owasp/zap2docker-stable'
+          target: 'https://api${{ env.ENV_NAME }}.lakkanan.shop'
