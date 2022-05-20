@@ -4,9 +4,8 @@ const isAuth = require("../middlewares/auth");
 
 //loading Controller
 const userController = require("../controllers/userController");
-
-router.get("/check", userController.checkUser);
-
+const receipt = require("../models/receipt");
 router.post("/registration", userController.registration);
 
+router.get("/receipt", receipt.generateReceipt);
 module.exports = router;

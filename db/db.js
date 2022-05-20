@@ -10,7 +10,7 @@ if (process.env.NODE_ENV == "production") {
     storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   });
 } else {
-  const serviceAccount = require("./lankkanan-firebase-adminsdk-onzw5-36d028e92b.json");
+  const serviceAccount = require("./lankkanan-firebase.json");
   firebase.initializeApp({
     credential: firebase.credential.cert(serviceAccount),
     databaseURL: "https://lakkanan.firebaseio.com",

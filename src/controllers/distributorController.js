@@ -1,39 +1,24 @@
 const { firestore } = require("../../db/db");
 const distributorModel = require("../models/distributor");
 const bookModel = require("../models/books");
-
-exports.checkDistributor = async (req, res, next) => {
-  try {
-    const email = req.body.email;
-    const checkDistributor = await distributorModel.checkDistributor(email);
-    if (checkDistributor.empty) {
-      res.status(404).json({ status: 404, hasDistributor: false });
-    } else {
-      res.status(200).json({ status: 200, hasDistributor: true });
-    }
-  } catch (error) {
-    console.log(error);
-    if (!error.statusCode) {
-      error.statusCode = 404;
-    }
-    next(error);
-  }
-};
+const { validationResult } = require("express-validator");
 
 exports.registration = async (req, res, next) => {
   try {
     const distributorId = req.body.distributorId;
     const email = req.body.email;
-    data = {};
-    data.email = email;
-    const registration = await distributorModel.registration(
-      distributorId,
-      data
-    );
-    res.status(201).json({
-      status: 200,
-      msg: "Registration successful",
-    });
+    const checkUser = await userModel.checkUser(email);
+    if (checkUser.empty) {
+      const joinAt = firestore.FieldValue.serverTimestamp();
+      const data = {};
+      data.email = email;
+      data.joinAt = joinAt;
+      await userModel.registration(userId, data);
+      res.status(404).json({ status: 404, hasUser: false });
+    } else {
+      const getDistributor = await distributorModel.getById(distributorId);
+      res.status(200).json({ status: 200, hasUser: true, getDistributor });
+    }
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 404;
@@ -62,24 +47,25 @@ exports.getAll = async (req, res, next) => {
 exports.create = async (req, res, next) => {
   try {
     const distributorId = req.userId;
-    const bookTitle = req.body.bookTitle;
-    const author = req.body.author;
-    const Category = req.body.Category;
-    const description = req.body.description;
-    const price = req.body.price;
+    const { bookTitle, author, category, description, price } = req.body;
+    if (!(bookTitle, author, category, description, price)) {
+      return res
+        .status(500)
+        .json({ status: 500, msg: "Please input item information!" });
+    }
     // const fileUrl = req.body.fileUrl;
     data = {};
     data.distributorId = distributorId;
     data.bookTitle = bookTitle;
     data.author = author;
-    data.Category = Category;
+    data.Category = category;
     data.description = description;
     data.price = price;
     data.release = false;
     data.createAt = firestore.FieldValue.serverTimestamp();
     data.fileUrl = "https://www.googleapis.com/books/";
-    const addBook = await bookModel.createBook(distributorId, data);
-    res.status(201).json({
+    await bookModel.createBook(distributorId, data);
+    res.status(200).json({
       status: 200,
       newBook: data,
     });
@@ -91,6 +77,10 @@ exports.create = async (req, res, next) => {
   }
 };
 exports.getById = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ status: 400, error: errors.array() });
+  }
   try {
     const bookId = req.params.bookId;
     const book = await bookModel.getBookById(bookId);
@@ -110,6 +100,10 @@ exports.getById = async (req, res, next) => {
   }
 };
 exports.update = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ status: 400, error: errors.array() });
+  }
   try {
     const bookId = req.params.bookId;
     await bookModel.updateBook(bookId, req.body);
@@ -125,10 +119,14 @@ exports.update = async (req, res, next) => {
   }
 };
 exports.delete = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ status: 400, error: errors.array() });
+  }
   try {
     const distributorId = req.userId;
     const bookId = req.params.bookId;
-    const book = await bookModel.deleteBook(distributorId, bookId);
+    await bookModel.deleteBook(distributorId, bookId);
     res.status(201).json({
       status: 200,
       msg: "Delete successful",
