@@ -53,7 +53,13 @@ exports.payment = async (req, res, next) => {
     const createAt = new Date();
     const user = await userModel.getById(userId);
     const book = await bookModel.getBookById(bookId);
-
+    // const data = {};
+    // data.bookId = bookId;
+    // data.bookTitle = book.bookTitle;
+    // data.category = book.category;
+    // data.author = book.author;
+    // data.createAt = book.createAt;
+    const addBook = await userModel.addBook(userId, bookId, book);
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -133,7 +139,9 @@ exports.payment = async (req, res, next) => {
       if (err) console.log(err);
       else console.log(info);
     });
-    res.status(200);
+    res
+      .status(200)
+      .json({ status: 200, message: "Send Payment Comfirm Complete. " });
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 404;

@@ -51,6 +51,20 @@ async function updateUser(data) {
     return null;
   }
 }
+async function addBook(userId, bookId, data) {
+  try {
+    await db
+      .collection(collectionName)
+      .doc(userId)
+      .collection(subCollectionName)
+      .doc(bookId)
+      .set(data, { merge: true });
+    return data;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+}
 
 module.exports = {
   getAll,
@@ -58,4 +72,5 @@ module.exports = {
   checkUser,
   registration,
   updateUser,
+  addBook,
 };
