@@ -1,7 +1,11 @@
 const { firestore } = require("../../db/db");
 const userModel = require("../models/users");
-
+const { validationResult } = require("express-validator");
 exports.registration = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ status: 400, error: errors.array() });
+  }
   try {
     const email = req.body.email;
     const userId = req.body.userId;

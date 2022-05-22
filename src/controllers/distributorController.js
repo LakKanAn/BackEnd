@@ -4,10 +4,14 @@ const bookModel = require("../models/books");
 const { validationResult } = require("express-validator");
 
 exports.registration = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ status: 400, error: errors.array() });
+  }
   try {
     const distributorId = req.body.distributorId;
     const email = req.body.email;
-    const checkUser = await userModel.checkUser(email);
+    const checkUser = await distributorModel.checkDistributor(email);
     if (checkUser.empty) {
       const joinAt = firestore.FieldValue.serverTimestamp();
       const data = {};
@@ -47,7 +51,7 @@ exports.getAll = async (req, res, next) => {
 exports.create = async (req, res, next) => {
   try {
     const distributorId = req.userId;
-    const { bookTitle, author, category, description, price } = req.body;
+    const { bookTitle, author, category, description, price, genre } = req.body;
     if (!(bookTitle, author, category, description, price)) {
       return res
         .status(500)
@@ -59,6 +63,7 @@ exports.create = async (req, res, next) => {
     data.bookTitle = bookTitle;
     data.author = author;
     data.Category = category;
+    data.genre = genre;
     data.description = description;
     data.price = price;
     data.release = false;

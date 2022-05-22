@@ -2,11 +2,18 @@ var express = require("express");
 var router = express.Router();
 const isAuth = require("../middlewares/auth");
 const distributorController = require("../controllers/distributorController");
-const bookController = require("../controllers/bookController");
-const { param } = require("express-validator");
+const { param, body } = require("express-validator");
 const validatorFindOne = [param("bookId").isString().notEmpty()];
+const validatorRegister = [
+  body("email").isString().notEmpty(),
+  body("distributorId").isString().notEmpty(),
+];
 ////distributor
-router.post("/registration", distributorController.registration);
+router.post(
+  "/registration",
+  validatorRegister,
+  distributorController.registration
+);
 
 ////book manage
 router.get("/books", isAuth, distributorController.getAll);

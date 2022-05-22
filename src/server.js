@@ -28,7 +28,7 @@ const marketRouter = require("./routes/market");
 // }
 
 // API
-app.use(`${API_PATH}/`, marketRouter);
+app.use(`${API_PATH}/market`, marketRouter);
 app.use(`${API_PATH}/site/`, siteRouter);
 app.use(`${API_PATH}/users/`, userRouter);
 app.use(`${API_PATH}/distributors/`, distributorRouter);

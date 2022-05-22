@@ -2,6 +2,7 @@ const { admin, firestore } = require("../../db/db");
 const bookModel = require("../models/books");
 const nodemailer = require("nodemailer");
 const { nanoid } = require("nanoid");
+const { validationResult } = require("express-validator");
 const userModel = require("../models/users");
 const GMAIL = process.env.GMAIL_EMAIL;
 const PASSWORD = process.env.GMAIL_PASSWORD;
@@ -22,8 +23,12 @@ exports.getAll = async (req, res, next) => {
 };
 
 exports.getById = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ status: 400, error: errors.array() });
+  }
   try {
-    const userId = req.userId;
+    // const userId = req.userId;
     const bookId = req.params.bookId;
     const book = await bookModel.getBookById(bookId);
     if (!book) {
@@ -136,12 +141,16 @@ exports.payment = async (req, res, next) => {
       html: receipt,
     };
     transporter.sendMail(mailOptions, function (err, info) {
-      if (err) console.log(err);
-      else console.log(info);
+      if (err) {
+        res
+          .status(500)
+          .json({ status: 500, message: "Send Payment Comfirm is failed. " });
+      } else {
+        res
+          .status(200)
+          .json({ status: 200, message: "Send Payment Comfirm Complete. " });
+      }
     });
-    res
-      .status(200)
-      .json({ status: 200, message: "Send Payment Comfirm Complete. " });
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 404;
