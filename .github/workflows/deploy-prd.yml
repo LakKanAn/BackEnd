@@ -20,9 +20,9 @@ jobs:
           script: |
             docker pull ghcr.io/lakkanan/backend:${{ github.event.inputs.deploy-version }}
             sed -i 's/backend:\w+/backend:${{ github.event.inputs.deploy-version }}/g' app-compose.yml
-            docker rmi $(docker images | grep "<none>" | awk '{print $3}')
             docker-compose -f ~/docker-compose/app-compose.yml down
             docker-compose -f ~/docker-compose/app-compose.yml up -d
+            docker rmi $(docker images | grep "<none>" | awk '{print $3}')
 
   acceptance-testing:
     needs: deploy
