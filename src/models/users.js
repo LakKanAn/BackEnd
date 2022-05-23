@@ -51,6 +51,8 @@ async function updateUser(data) {
     return null;
   }
 }
+
+////bookshelf
 async function addBook(userId, bookId, data) {
   try {
     await db
@@ -66,6 +68,19 @@ async function addBook(userId, bookId, data) {
   }
 }
 
+async function getBookAll(userId) {
+  try {
+    const bookshelf = await db
+      .collection(collectionName)
+      .doc(userId)
+      .collection(subCollectionName)
+      .get();
+    return bookshelf;
+  } catch (error) {
+    return null;
+  }
+}
+
 module.exports = {
   getAll,
   getById,
@@ -73,4 +88,5 @@ module.exports = {
   registration,
   updateUser,
   addBook,
+  getBookAll,
 };
