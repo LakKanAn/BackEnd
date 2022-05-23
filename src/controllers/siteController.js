@@ -32,16 +32,10 @@ exports.me = async (req, res, next) => {
     try {
       const tmpUser = jwt.verify(access_token, SECRET);
       const user = await admin.auth().getUser(tmpUser.uid);
-      // user.email
-      // user.displayName
-      if (user.customClaims.admin != true) {
-        res.status(401).json({ status: 401, message: "Unauthorized" });
-      }
       const userData = {
+        uid: user.uid,
         email: user.email,
         displayName: user.displayName,
-        admin: user.customClaims.admin,
-        accessLevel: user.customClaims.accessLevel,
       };
       res.status(200).json({ status: 200, user: userData });
     } catch (err) {

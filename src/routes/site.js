@@ -7,6 +7,6 @@ const siteController = require("../controllers/siteController");
 // router.post("/auth", siteController.auth);
 router.post("/access_token", siteController.access_token);
 router.get("/me", siteController.me);
-router.post("/bye", siteController.bye);
+router.get("/bye", siteController.bye);
 
 module.exports = router;

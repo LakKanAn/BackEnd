@@ -1,15 +1,14 @@
 var express = require("express");
 var router = express.Router();
-const isAuth = require("../middleware/auth");
-
+const isAuth = require("../middlewares/auth");
+const { param, body } = require("express-validator");
+const validatorRegister = [
+  body("email").isString().notEmpty(),
+  body("userId").isString().notEmpty(),
+];
 //loading Controller
-const userController = require("../controllers/user");
+const userController = require("../controllers/userController");
 
-// route to controller
-// router.get("/", isAuth, memberController.getAll);
-router.get("/", userController.getAll);
-router.get("/:uid", userController.getById);
-router.put("/:uid", userController.updateById);
-router.delete("/:uid", userController.deleteById);
+router.post("/registration", validatorRegister, userController.registration);
 
 module.exports = router;
