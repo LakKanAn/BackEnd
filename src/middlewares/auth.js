@@ -9,7 +9,9 @@ module.exports = (req, res, next) => {
   try {
     accessToken = authorization.split(" ")[1];
   } catch (err) {
-    res.status(400).json({ status: 400, message: "Bad Request", err: err });
+    return res
+      .status(400)
+      .json({ status: 400, message: "Bad Request", err: err });
   }
   try {
     decodedToken = jwt.verify(accessToken, SECRET);

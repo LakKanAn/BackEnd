@@ -11,4 +11,6 @@ const userController = require("../controllers/userController");
 
 router.post("/registration", validatorRegister, userController.registration);
 
+router.get("/bookshelf", isAuth, userController.getAllBooks);
+
 module.exports = router;
