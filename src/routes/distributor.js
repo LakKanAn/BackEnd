@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const isAuth = require("../middlewares/auth");
+const uploadBooKCover = require("../middlewares/multer");
 const distributorController = require("../controllers/distributorController");
 const { param, body } = require("express-validator");
 const validatorFindOne = [param("bookId").isString().notEmpty()];
@@ -18,6 +19,11 @@ router.post(
 ////book manage
 router.get("/books", isAuth, distributorController.getAll);
 router.post("/books", isAuth, distributorController.create);
+router.post(
+  "/books/:bookId",
+  [isAuth, uploadBooKCover.single("image")],
+  distributorController.addImage
+);
 router.get(
   "/books/:bookId",
   [isAuth, validatorFindOne],

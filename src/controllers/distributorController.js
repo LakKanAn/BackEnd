@@ -1,6 +1,7 @@
 const { firestore } = require("../../db/db");
 const distributorModel = require("../models/distributor");
 const bookModel = require("../models/books");
+const minioService = require("../services/minio");
 const { validationResult } = require("express-validator");
 
 exports.registration = async (req, res, next) => {
@@ -81,6 +82,30 @@ exports.create = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.addImage = async (req, res, next) => {
+  try {
+    const distributorId = req.userId;
+    const bookId = req.params.bookId;
+    const contenType = req.file.mimetype;
+    const originalname = req.file.originalname;
+    const buffer = req.file.buffer;
+    console.log(contenType);
+    console.log(originalname);
+    console.log(buffer);
+    data = {};
+    data.bookImage = originalname;
+    await minioService.uploadFile(contenType, originalname, buffer);
+    await bookModel.updateBook(bookId, data);
+    res.status(201).send({ imageName: req.file.originalname });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 404;
+    }
+    next(error);
+  }
+};
+
 exports.getById = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
