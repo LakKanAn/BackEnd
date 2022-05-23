@@ -30,12 +30,12 @@ router.get(
   distributorController.getById
 );
 router.post(
-  "/books/:bookId",
+  "/books/edit/:bookId",
   [isAuth, validatorFindOne],
   distributorController.update
 );
 router.delete(
-  "/books/:bookId",
+  "/books/delete/:bookId",
   [isAuth, validatorFindOne],
   distributorController.delete
 );

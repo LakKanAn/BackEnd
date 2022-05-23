@@ -114,12 +114,15 @@ exports.getById = async (req, res, next) => {
   try {
     const bookId = req.params.bookId;
     const book = await bookModel.getBookById(bookId);
+    // const bookImage = book.bookImage;
+    const bookImage = await minioService.getCoverBook(book.bookImage);
     if (!book) {
       res.status(404).json({ status: 404, msg: "Don'y have any book" });
     } else {
       res.status(201).json({
         status: 200,
         BookDetails: book,
+        bookImage,
       });
     }
   } catch (error) {
@@ -136,11 +139,16 @@ exports.update = async (req, res, next) => {
   }
   try {
     const bookId = req.params.bookId;
-    await bookModel.updateBook(bookId, req.body);
-    res.status(201).json({
-      status: 200,
-      msg: "updateBook successful",
-    });
+    const book = await bookModel.getBookById(bookId);
+    if (!book) {
+      res.status(404).json({ status: 404, msg: "Don'y have any book" });
+    } else {
+      await bookModel.updateBook(bookId, req.body);
+      res.status(201).json({
+        status: 200,
+        msg: "updateBook successful",
+      });
+    }
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 404;
@@ -156,11 +164,16 @@ exports.delete = async (req, res, next) => {
   try {
     const distributorId = req.userId;
     const bookId = req.params.bookId;
-    await bookModel.deleteBook(distributorId, bookId);
-    res.status(201).json({
-      status: 200,
-      msg: "Delete successful",
-    });
+    const book = await bookModel.getBookById(bookId);
+    if (!book) {
+      res.status(404).json({ status: 404, msg: "Don'y have any book" });
+    } else {
+      await bookModel.deleteBook(distributorId, bookId);
+      res.status(201).json({
+        status: 200,
+        msg: "Delete successful",
+      });
+    }
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 404;
