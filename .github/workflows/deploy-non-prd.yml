@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - dev
+      - main
 
 jobs:
   code-testing:
@@ -10,6 +11,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+#       - name: Setup Node
+#         uses: actions/setup-node@v1
+#         with:
+#           node-version: '16.15.0'
 
 #       - name: Install modules
 #         run: npm install
@@ -99,9 +105,9 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
             docker pull ghcr.io/lakkanan/backend:${{ env.ENV_NAME }}
+            docker-compose -f ~/docker-compose/${{ env.ENV_NAME }}-app-compose.yml down
+            docker-compose -f ~/docker-compose/${{ env.ENV_NAME }}-app-compose.yml up -d
             docker rmi $(docker images | grep "<none>" | awk '{print $3}')
-            docker-compose -f ~/docker-compose/dev-app-compose.yml down
-            docker-compose -f ~/docker-compose/dev-app-compose.yml up -d
 
   acceptance-testing:
     needs: deploy
