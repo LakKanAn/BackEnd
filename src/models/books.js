@@ -38,7 +38,7 @@ async function getBookById(bookId) {
     null;
   }
 }
-async function createBook(distributorId, data) {
+async function createBook(data) {
   try {
     const newBook = await db.collection(collectionName).doc();
     data.bookId = newBook.id;

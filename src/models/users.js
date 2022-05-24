@@ -80,6 +80,22 @@ async function getBookAll(userId) {
     return null;
   }
 }
+async function getBookById(userId, bookId) {
+  try {
+    const book = await (
+      await db
+        .collection(collectionName)
+        .doc(userId)
+        .collection(subCollectionName)
+        .doc(bookId)
+        .get()
+    ).data();
+    return book;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+}
 
 module.exports = {
   getAll,
@@ -89,4 +105,5 @@ module.exports = {
   updateUser,
   addBook,
   getBookAll,
+  getBookById,
 };

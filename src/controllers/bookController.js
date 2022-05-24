@@ -5,6 +5,7 @@ const { nanoid } = require("nanoid");
 const { validationResult } = require("express-validator");
 const minioService = require("../services/minio");
 const userModel = require("../models/users");
+const transactionModel = require("../models/transactions");
 const GMAIL = process.env.GMAIL_EMAIL;
 const PASSWORD = process.env.GMAIL_PASSWORD;
 exports.getAll = async (req, res, next) => {
@@ -78,13 +79,36 @@ exports.payment = async (req, res, next) => {
     const createAt = new Date();
     const user = await userModel.getById(userId);
     const book = await bookModel.getBookById(bookId);
-    // const data = {};
-    // data.bookId = bookId;
-    // data.bookTitle = book.bookTitle;
-    // data.category = book.category;
-    // data.author = book.author;
-    // data.createAt = book.createAt;
-    const addBook = await userModel.addBook(userId, bookId, book);
+
+    const checkBook = await userModel.getBookById(userId, bookId);
+    console.log(checkBook);
+    console.log(book.bookId);
+    if (checkBook == undefined || checkBook == null) {
+      console.log("2124");
+      await userModel.addBook(userId, bookId, book);
+      const data = {};
+      data.userId = userId;
+      data.bookId = bookId;
+      data.amount = book.price;
+      data.date = firestore.FieldValue.serverTimestamp();
+      data.type = "purchase";
+      data.status = "successful";
+      const transactions = await transactionModel.create(data);
+    } else if (checkBook.bookId == book.bookId) {
+      return res
+        .status(200)
+        .json({ status: 200, msg: "This book you have already bought." });
+    } else {
+      const addBook = await userModel.addBook(userId, bookId, book);
+      const data = {};
+      data.userId = userId;
+      data.bookId = bookId;
+      data.amount = book.price;
+      data.date = firestore.FieldValue.serverTimestamp();
+      data.type = "purchase";
+      data.status = "successful";
+      const transactions = await transactionModel.create(data);
+    }
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
