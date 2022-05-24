@@ -1,7 +1,7 @@
 const Minio = require("minio");
 
 const minioClient = new Minio.Client({
-  endPoint: "minioapi.lakkanan.shop",
+  endPoint: process.env.ENDPOINT,
   useSSL: true,
   accessKey: process.env.ACCESSKEY,
   secretKey: process.env.SECRETKEY,
