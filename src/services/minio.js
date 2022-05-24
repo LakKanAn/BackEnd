@@ -22,9 +22,7 @@ async function uploadFile(contenType, originalname, buffer) {
 
 async function getCoverBook(originalname) {
   try {
-    console.log(originalname);
     const dataStream = await minioClient.getObject("books", originalname);
-
     return dataStream;
   } catch (err) {
     return null;

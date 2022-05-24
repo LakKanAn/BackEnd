@@ -25,11 +25,6 @@ exports.getAll = async (req, res, next) => {
 exports.getCoverBookImages = async (req, res, next) => {
   try {
     const imageName = req.params.imageName;
-    console.log(imageName);
-    if (!imageName) {
-      // throw new BadRequestException("require imageName params.");
-    }
-
     const dataStream = await minioService.getCoverBook(imageName);
 
     dataStream.on("data", (chunk) => {
