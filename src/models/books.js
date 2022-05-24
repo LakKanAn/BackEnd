@@ -42,7 +42,9 @@ async function createBook(data) {
   try {
     const newBook = await db.collection(collectionName).doc();
     data.bookId = newBook.id;
-    newBook.set(data, { merge: true });
+    newBook.create(data);
+
+    return newBook;
   } catch (err) {
     console.log(err);
     null;

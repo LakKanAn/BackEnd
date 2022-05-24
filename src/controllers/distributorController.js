@@ -53,10 +53,10 @@ exports.create = async (req, res, next) => {
   try {
     const distributorId = req.userId;
     const { bookTitle, author, category, description, price, genre } = req.body;
-    if (!(bookTitle, author, category, description, price)) {
+    if (!(bookTitle, author, category, description, price, genre)) {
       return res
-        .status(500)
-        .json({ status: 500, msg: "Please input item information!" });
+        .status(400)
+        .json({ status: 400, msg: "Please input item information!" });
     }
     // const fileUrl = req.body.fileUrl;
     data = {};
@@ -70,10 +70,12 @@ exports.create = async (req, res, next) => {
     data.release = false;
     data.createAt = firestore.FieldValue.serverTimestamp();
     data.fileUrl = "https://www.googleapis.com/books/";
-    await bookModel.createBook(distributorId, data);
+    const createBook = await bookModel.createBook(data);
+    const bookId = createBook.bookId;
     res.status(200).json({
       status: 200,
       newBook: data,
+      bookId,
     });
   } catch (error) {
     if (!error.statusCode) {
