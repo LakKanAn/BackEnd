@@ -4,8 +4,8 @@ const minioClient = new Minio.Client({
   endPoint: "localhost",
   port: 9000,
   useSSL: false,
-  accessKey: "minioadmin",
-  secretKey: "minioadmin",
+  accessKey: process.env.ACCESSKEY,
+  secretKey: process.env.SECRETKEY,
 });
 
 async function uploadFile(contenType, originalname, buffer) {
@@ -22,7 +22,10 @@ async function uploadFile(contenType, originalname, buffer) {
 
 async function getCoverBook(originalname) {
   try {
-    minioClient.presignedUrl("GET", "books", originalname, 24 * 60 * 60);
+    console.log(originalname);
+    const dataStream = await minioClient.getObject("books", originalname);
+
+    return dataStream;
   } catch (err) {
     return null;
   }

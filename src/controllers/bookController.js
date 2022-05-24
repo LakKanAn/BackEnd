@@ -3,6 +3,7 @@ const bookModel = require("../models/books");
 const nodemailer = require("nodemailer");
 const { nanoid } = require("nanoid");
 const { validationResult } = require("express-validator");
+const minioService = require("../services/minio");
 const userModel = require("../models/users");
 const GMAIL = process.env.GMAIL_EMAIL;
 const PASSWORD = process.env.GMAIL_PASSWORD;
@@ -21,6 +22,30 @@ exports.getAll = async (req, res, next) => {
     next(error);
   }
 };
+exports.getCoverBookImages = async (req, res, next) => {
+  try {
+    const imageName = req.params.imageName;
+    console.log(imageName);
+    if (!imageName) {
+      // throw new BadRequestException("require imageName params.");
+    }
+
+    const dataStream = await minioService.getCoverBook(imageName);
+
+    dataStream.on("data", (chunk) => {
+      res.write(chunk);
+    });
+
+    dataStream.on("end", () => {
+      return res.end();
+    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 404;
+    }
+    next(error);
+  }
+};
 
 exports.getById = async (req, res, next) => {
   const errors = validationResult(req);
@@ -28,7 +53,7 @@ exports.getById = async (req, res, next) => {
     return res.status(400).json({ status: 400, error: errors.array() });
   }
   try {
-    // const userId = req.userId;
+    const userId = req.userId;
     const bookId = req.params.bookId;
     const book = await bookModel.getBookById(bookId);
     if (!book) {
