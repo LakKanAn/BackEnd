@@ -92,14 +92,12 @@ exports.addImage = async (req, res, next) => {
     const contenType = req.file.mimetype;
     const originalname = req.file.originalname;
     const buffer = req.file.buffer;
-    console.log(contenType);
-    console.log(originalname);
-    console.log(buffer);
     data = {};
     data.bookImage = originalname;
     await minioService.uploadFile(contenType, originalname, buffer);
+    const bookImage = await minioService.getCoverBook(originalname);
     await bookModel.updateBook(bookId, data);
-    res.status(201).send({ imageName: req.file.originalname });
+    res.status(201).send({ imageName: req.file.originalname, url: bookImage });
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 404;

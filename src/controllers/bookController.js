@@ -25,16 +25,10 @@ exports.getAll = async (req, res, next) => {
 };
 exports.getCoverBookImages = async (req, res, next) => {
   try {
-    const imageName = req.params.imageName;
-    const dataStream = await minioService.getCoverBook(imageName);
-
-    dataStream.on("data", (chunk) => {
-      res.write(chunk);
-    });
-
-    dataStream.on("end", () => {
-      return res.end();
-    });
+    const bookId = req.params.bookId;
+    const book = await bookModel.getBookById(bookId);
+    const coverBook = await minioService.getCoverBook(book.bookImage);
+    res.status(200).json({ status: 200, coverBook });
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 404;
