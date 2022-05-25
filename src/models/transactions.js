@@ -4,7 +4,7 @@ const collectionName = "transactions";
 async function create(data) {
   try {
     const transactions = await db.collection(collectionName).doc();
-    data.bookId = transactions.id;
+    data.transactionId = transactions.id;
     transactions.set(data, { merge: true });
   } catch (err) {
     return null;
