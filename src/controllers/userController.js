@@ -18,6 +18,7 @@ exports.registration = async (req, res, next) => {
       data.email = email;
       data.displayName = displayName;
       data.email = email;
+      data.role = "user"
       data.joinAt = joinAt;
       await userModel.registration(userId, data);
       res.status(404).json({ status: 404, hasUser: false });

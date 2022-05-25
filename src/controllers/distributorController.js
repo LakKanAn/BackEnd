@@ -17,7 +17,7 @@ exports.registration = async (req, res, next) => {
       const joinAt = firestore.FieldValue.serverTimestamp();
       const data = {};
       data.email = email;
-      data.joinAt = joinAt;
+      data.role = "distributor";
       await userModel.registration(userId, data);
       res.status(404).json({ status: 404, hasUser: false });
     } else {
@@ -63,7 +63,7 @@ exports.create = async (req, res, next) => {
     data.distributorId = distributorId;
     data.bookTitle = bookTitle;
     data.author = author;
-    data.Category = category;
+    data.category = category;
     data.genre = genre;
     data.description = description;
     data.price = price;
