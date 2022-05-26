@@ -35,8 +35,10 @@ exports.me = async (req, res, next) => {
       const userData = {
         uid: user.uid,
         email: user.email,
+        email_verified: user.emailVerified,
         displayName: user.displayName,
       };
+
       res.status(200).json({ status: 200, user: userData });
     } catch (err) {
       res
