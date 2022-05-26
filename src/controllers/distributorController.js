@@ -52,6 +52,10 @@ exports.getAll = async (req, res, next) => {
 exports.create = async (req, res, next) => {
   try {
     const distributorId = req.userId;
+    const checkDistributor = await distributorModel.getById(distributorId);
+    if (checkDistributor == undefined) {
+      return res.status(403).json({ status: 403, msg: "not a permission" });
+    }
     const { bookTitle, author, category, description, price, genre } = req.body;
     if (!(bookTitle, author, category, description, price, genre)) {
       return res
@@ -88,6 +92,10 @@ exports.create = async (req, res, next) => {
 exports.addImage = async (req, res, next) => {
   try {
     const distributorId = req.userId;
+    const checkDistributor = await distributorModel.getById(distributorId);
+    if (checkDistributor == undefined) {
+      return res.status(403).json({ status: 403, msg: "not a permission" });
+    }
     const bookId = req.params.bookId;
     const contenType = req.file.mimetype;
     const originalname = req.file.originalname;
@@ -112,6 +120,11 @@ exports.getById = async (req, res, next) => {
     return res.status(400).json({ status: 400, error: errors.array() });
   }
   try {
+    const distributorId = req.userId;
+    const checkDistributor = await distributorModel.getById(distributorId);
+    if (checkDistributor == undefined) {
+      return res.status(403).json({ status: 403, msg: "not a permission" });
+    }
     const bookId = req.params.bookId;
     const book = await bookModel.getBookById(bookId);
     // const bookImage = book.bookImage;
@@ -138,6 +151,11 @@ exports.update = async (req, res, next) => {
     return res.status(400).json({ status: 400, error: errors.array() });
   }
   try {
+    const distributorId = req.userId;
+    const checkDistributor = await distributorModel.getById(distributorId);
+    if (checkDistributor == undefined) {
+      return res.status(403).json({ status: 403, msg: "not a permission" });
+    }
     const bookId = req.params.bookId;
     const book = await bookModel.getBookById(bookId);
     if (!book) {
@@ -163,6 +181,10 @@ exports.delete = async (req, res, next) => {
   }
   try {
     const distributorId = req.userId;
+    const checkDistributor = await distributorModel.getById(distributorId);
+    if (checkDistributor == undefined) {
+      return res.status(403).json({ status: 403, msg: "not a permission" });
+    }
     const bookId = req.params.bookId;
     const book = await bookModel.getBookById(bookId);
     if (!book) {
