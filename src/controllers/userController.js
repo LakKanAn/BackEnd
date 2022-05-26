@@ -1,7 +1,7 @@
 const { firestore } = require("../../db/db");
 const userModel = require("../models/users");
 const { validationResult } = require("express-validator");
-
+const minioService = require("../services/minio");
 exports.registration = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -18,7 +18,7 @@ exports.registration = async (req, res, next) => {
       data.email = email;
       data.displayName = displayName;
       data.email = email;
-      data.role = "user"
+      data.role = "user";
       data.joinAt = joinAt;
       await userModel.registration(userId, data);
       res.status(404).json({ status: 404, hasUser: false });
@@ -38,8 +38,20 @@ exports.registration = async (req, res, next) => {
 exports.getAllBooks = async (req, res, next) => {
   try {
     const userId = req.userId;
-    const getAll = await userModel.getBookAll(userId);
-    const bookshelf = getAll.docs.map((doc) => doc.data());
+    let bookshelf = [];
+    let bookImages = [];
+    const snapshop = await userModel.getBookAll(userId);
+    snapshop.forEach((doc) => {
+      let data = doc.data();
+      bookshelf.push({ ...data, id: doc.id });
+    });
+    for (let i = 0; i < bookshelf.length; i++) {
+      bookImages.push(await minioService.getCoverBook(bookshelf[i].bookImage));
+    }
+    for (let i = 0; i < bookshelf.length; i++) {
+      const buffer = bookshelf[i];
+      buffer.bookImage = bookImages[i];
+    }
     res.status(200).json({ status: 200, bookshelf });
   } catch (error) {
     console.log(error);

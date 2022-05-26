@@ -15,7 +15,6 @@ exports.getAll = async (req, res, next) => {
     const snapshop = await bookModel.getBookAll();
     snapshop.forEach((doc) => {
       let data = doc.data();
-
       books.push({ ...data, id: doc.id });
     });
     for (let i = 0; i < books.length; i++) {
@@ -28,7 +27,6 @@ exports.getAll = async (req, res, next) => {
     res.status(201).json({
       status: 200,
       books: books,
-      // bookImage: bookImages,
     });
   } catch (error) {
     if (!error.statusCode) {
