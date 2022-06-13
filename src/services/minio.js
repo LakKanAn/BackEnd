@@ -7,12 +7,24 @@ const minioClient = new Minio.Client({
   secretKey: process.env.SECRETKEY,
 });
 
-async function uploadFile(contenType, originalname, buffer) {
+async function uploadFileImasge(contenType, originalname, buffer) {
   try {
     const metadata = {
       "Content-Type": contenType,
     };
     await minioClient.putObject("books", originalname, buffer, metadata);
+    return originalname;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+}
+async function uploadFileContent(contenType, originalname, buffer) {
+  try {
+    const metadata = {
+      "Content-Type": contenType,
+    };
+    await minioClient.putObject("contents", originalname, buffer, metadata);
     return originalname;
   } catch (err) {
     console.log(err);
@@ -34,4 +46,23 @@ async function getCoverBook(originalname) {
   }
 }
 
-module.exports = { uploadFile, getCoverBook };
+async function getContentBook(originalname) {
+  try {
+    const bookContent = await minioClient.presignedUrl(
+      "GET",
+      "contents",
+      originalname,
+      24 * 60 * 60
+    );
+    return bookContent;
+  } catch (err) {
+    return null;
+  }
+}
+
+module.exports = {
+  uploadFileImasge,
+  uploadFileContent,
+  getCoverBook,
+  getContentBook,
+};

@@ -89,25 +89,39 @@ exports.create = async (req, res, next) => {
   }
 };
 
-exports.addImage = async (req, res, next) => {
+exports.addFile = async (req, res, next) => {
   try {
     const distributorId = req.userId;
     const checkDistributor = await distributorModel.getById(distributorId);
     if (checkDistributor == undefined) {
       return res.status(403).json({ status: 403, msg: "not a permission" });
     }
+    const keyName = Object.keys(req.files)[0];
+    const file = req.files[keyName][0];
     const bookId = req.params.bookId;
-    const contenType = req.file.mimetype;
-    const originalname = req.file.originalname;
-    const buffer = req.file.buffer;
-    data = {};
-    data.bookImage = originalname;
-    await minioService.uploadFile(contenType, originalname, buffer);
-    const bookImage = await minioService.getCoverBook(originalname);
-    await bookModel.updateBook(bookId, data);
-    res
-      .status(201)
-      .send({ status: 201, imageName: req.file.originalname, url: bookImage });
+    const contenType = file.mimetype;
+    const originalname = file.originalname;
+    const buffer = file.buffer;
+    if (file.fieldname == "image") {
+      data = {};
+      data.bookImage = originalname;
+      await minioService.uploadFileImasge(contenType, originalname, buffer);
+      const bookImage = await minioService.getCoverBook(originalname);
+      await bookModel.updateBook(bookId, data);
+      res.status(201).send({
+        status: 201,
+        imageName: file.originalname,
+        url: bookImage,
+      });
+    } else if (file.fieldname == "content") {
+      await minioService.uploadFileContent(contenType, originalname, buffer);
+      const bookContent = await minioService.getContentBook(originalname);
+      res.status(201).send({
+        status: 201,
+        imageName: file.originalname,
+        url: bookContent,
+      });
+    }
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 404;

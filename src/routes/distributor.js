@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const isAuth = require("../middlewares/auth");
-const uploadBooKCover = require("../middlewares/multer");
+const { uploadBook } = require("../middlewares/multer");
 const distributorController = require("../controllers/distributorController");
 const { param, body } = require("express-validator");
 const validatorFindOne = [param("bookId").isString().notEmpty()];
@@ -21,9 +21,17 @@ router.get("/books", isAuth, distributorController.getAll);
 router.post("/books", isAuth, distributorController.create);
 router.post(
   "/books/:bookId",
-  [isAuth, uploadBooKCover.single("image")],
-  distributorController.addImage
+  [isAuth, uploadBook.fields([{ name: "image" }, { name: "content" }])],
+  distributorController.addFile
 );
+// router.post(
+//   "/books_pdf/:bookId",
+//   [
+//     isAuth,
+//     // uploadBooKContent.single("test_kub"),
+//   ],
+//   distributorController.addContent
+// );
 router.get(
   "/books/:bookId",
   [isAuth, validatorFindOne],

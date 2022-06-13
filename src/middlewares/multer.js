@@ -1,12 +1,12 @@
 const multer = require("multer");
 
-const uploadBooKCover = multer({
+const uploadBook = multer({
   fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(png|jpg|jpeg)$/)) {
-      return cb(new Error("Please upload image"));
+    if (!file.originalname.match(/\.(png|jpg|jpeg|pdf)$/)) {
+      return cb(new Error("Please upload book"));
     }
     cb(null, true);
   },
 });
 
-module.exports = uploadBooKCover;
+module.exports = { uploadBook };
