@@ -16,7 +16,7 @@ exports.access_token = async (req, res, next) => {
       delete user.sub;
       delete user.aud;
       const access_token = jwt.sign({ user: user, uid: user.uid }, SECRET);
-      res.status(200).json({ status: 200, access_token: access_token });
+      res.status(201).json({ status: 201, access_token: access_token });
     } catch (err) {
       res
         .status(401)

@@ -24,7 +24,7 @@ exports.getAll = async (req, res, next) => {
       const buffer = books[i];
       buffer.bookImage = bookImages[i];
     }
-    res.status(201).json({
+    res.status(200).json({
       status: 200,
       books: books,
     });
@@ -64,7 +64,7 @@ exports.getById = async (req, res, next) => {
     } else {
       const coverBook = await minioService.getCoverBook(book.bookImage);
       book.bookImage = coverBook;
-      res.status(201).json({
+      res.status(200).json({
         status: 200,
         BookDetails: book,
       });
@@ -91,7 +91,6 @@ exports.payment = async (req, res, next) => {
     console.log(checkBook);
     console.log(book.bookId);
     if (checkBook == undefined || checkBook == null) {
-      console.log("2124");
       await userModel.addBook(userId, bookId, book);
       const data = {};
       data.userId = userId;
@@ -198,8 +197,8 @@ exports.payment = async (req, res, next) => {
           .json({ status: 500, message: "Send Payment Comfirm is failed. " });
       } else {
         res
-          .status(200)
-          .json({ status: 200, message: "Send Payment Comfirm Complete. " });
+          .status(201)
+          .json({ status: 201, message: "Send Payment Comfirm Complete. " });
       }
     });
   } catch (error) {

@@ -22,7 +22,7 @@ exports.registration = async (req, res, next) => {
       res.status(404).json({ status: 404, hasUser: false });
     } else {
       const getDistributor = await distributorModel.getById(distributorId);
-      res.status(200).json({ status: 200, hasUser: true, getDistributor });
+      res.status(201).json({ status: 201, hasUser: true, getDistributor });
     }
   } catch (error) {
     if (!error.statusCode) {
@@ -37,7 +37,7 @@ exports.getAll = async (req, res, next) => {
     const distributorId = req.userId;
     const getAll = await bookModel.getBookAllByDistributor(distributorId);
     const books = getAll.docs.map((doc) => doc.data());
-    res.status(201).json({
+    res.status(200).json({
       status: 200,
       books: books,
     });
@@ -105,7 +105,9 @@ exports.addImage = async (req, res, next) => {
     await minioService.uploadFile(contenType, originalname, buffer);
     const bookImage = await minioService.getCoverBook(originalname);
     await bookModel.updateBook(bookId, data);
-    res.status(201).send({ imageName: req.file.originalname, url: bookImage });
+    res
+      .status(201)
+      .send({ status: 201, imageName: req.file.originalname, url: bookImage });
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 404;
@@ -132,7 +134,7 @@ exports.getById = async (req, res, next) => {
     if (!book) {
       res.status(404).json({ status: 404, msg: "Don'y have any book" });
     } else {
-      res.status(201).json({
+      res.status(200).json({
         status: 200,
         BookDetails: book,
         bookImage,
@@ -162,8 +164,8 @@ exports.update = async (req, res, next) => {
       res.status(404).json({ status: 404, msg: "Don'y have any book" });
     } else {
       await bookModel.updateBook(bookId, req.body);
-      res.status(201).json({
-        status: 200,
+      res.status(202).json({
+        status: 202,
         msg: "updateBook successful",
       });
     }
@@ -191,8 +193,8 @@ exports.delete = async (req, res, next) => {
       res.status(404).json({ status: 404, msg: "Don'y have any book" });
     } else {
       await bookModel.deleteBook(distributorId, bookId);
-      res.status(201).json({
-        status: 200,
+      res.status(202).json({
+        status: 202,
         msg: "Delete successful",
       });
     }

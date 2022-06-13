@@ -24,7 +24,7 @@ exports.registration = async (req, res, next) => {
       res.status(404).json({ status: 404, hasUser: false });
     } else {
       const getUser = await userModel.getById(userId);
-      res.status(200).json({ status: 200, hasUser: true, getUser });
+      res.status(201).json({ status: 201, hasUser: true, getUser });
     }
   } catch (error) {
     console.log(error);
