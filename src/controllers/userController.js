@@ -1,5 +1,6 @@
 const { firestore } = require("../../db/db");
 const userModel = require("../models/users");
+const bookModel = require("../models/books");
 const { validationResult } = require("express-validator");
 const minioService = require("../services/minio");
 exports.registration = async (req, res, next) => {
@@ -43,16 +44,20 @@ exports.getAllBooks = async (req, res, next) => {
     const snapshop = await userModel.getBookAll(userId);
     snapshop.forEach((doc) => {
       let data = doc.data();
-      bookshelf.push({ ...data, id: doc.id });
+      bookshelf.push({ ...data });
     });
+    let bookDetail = [];
     for (let i = 0; i < bookshelf.length; i++) {
-      bookImages.push(await minioService.getCoverBook(bookshelf[i].bookImage));
+      let book = await bookModel.getBookById(bookshelf[i].bookId);
+      let bookImage = await minioService.getCoverBook(book.bookImage);
+      bookImages.push(bookImage);
+      bookDetail.push(book);
     }
     for (let i = 0; i < bookshelf.length; i++) {
-      const buffer = bookshelf[i];
+      const buffer = bookDetail[i];
       buffer.bookImage = bookImages[i];
     }
-    res.status(200).json({ status: 200, bookshelf });
+    res.status(200).json({ status: 200, bookDetail });
   } catch (error) {
     console.log(error);
     if (!error.statusCode) {

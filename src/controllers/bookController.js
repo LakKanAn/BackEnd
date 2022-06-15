@@ -88,10 +88,8 @@ exports.payment = async (req, res, next) => {
     const book = await bookModel.getBookById(bookId);
 
     const checkBook = await userModel.getBookById(userId, bookId);
-    console.log(checkBook);
-    console.log(book.bookId);
     if (checkBook == undefined || checkBook == null) {
-      await userModel.addBook(userId, bookId, book);
+      await userModel.addBook(userId, bookId);
       const data = {};
       data.userId = userId;
       data.bookId = bookId;
@@ -99,13 +97,13 @@ exports.payment = async (req, res, next) => {
       data.date = firestore.FieldValue.serverTimestamp();
       data.type = "purchase";
       data.status = "successful";
-      const transactions = await transactionModel.create(data);
+      await transactionModel.create(data);
     } else if (checkBook.bookId == book.bookId) {
       return res
         .status(200)
         .json({ status: 200, msg: "This book you have already bought." });
     } else {
-      const addBook = await userModel.addBook(userId, bookId, book);
+      await userModel.addBook(userId, bookId);
       const data = {};
       data.userId = userId;
       data.bookId = bookId;
@@ -113,7 +111,7 @@ exports.payment = async (req, res, next) => {
       data.date = firestore.FieldValue.serverTimestamp();
       data.type = "purchase";
       data.status = "successful";
-      const transactions = await transactionModel.create(data);
+      await transactionModel.create(data);
     }
     const transporter = nodemailer.createTransport({
       service: "gmail",

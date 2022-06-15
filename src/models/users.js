@@ -53,15 +53,15 @@ async function updateUser(data) {
 }
 
 ////bookshelf
-async function addBook(userId, bookId, data) {
+async function addBook(userId, bookId) {
   try {
     await db
       .collection(collectionName)
       .doc(userId)
       .collection(subCollectionName)
       .doc(bookId)
-      .set(data, { merge: true });
-    return data;
+      .set({ bookId: bookId }, { merge: true });
+    return bookId;
   } catch (err) {
     console.log(err);
     return null;
