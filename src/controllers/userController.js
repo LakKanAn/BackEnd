@@ -66,3 +66,30 @@ exports.getAllBooks = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getById = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const bookId = req.params.bookId;
+    const bookshelf = await userModel.getBookById(userId, bookId);
+    if (bookshelf.empty) {
+      console.log(bookshelf);
+      return res.status(404).json({ status: 404, msg: "Don't have any book" });
+    } else {
+      const book = await bookModel.getBookById(bookshelf.data().bookId);
+      const coverBook = await minioService.getCoverBook(book.bookImage);
+      const contentBook = await minioService.getContentBook(book.bookImage);
+      book.bookImage = coverBook;
+      book.contentBook = contentBook;
+      res.status(200).json({
+        status: 200,
+        BookDetails: book,
+      });
+    }
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 404;
+    }
+    next(error);
+  }
+};

@@ -73,7 +73,6 @@ exports.create = async (req, res, next) => {
     data.price = price;
     data.release = false;
     data.createAt = firestore.FieldValue.serverTimestamp();
-    data.fileUrl = "https://www.googleapis.com/books/";
     const createBook = await bookModel.createBook(data);
     const bookId = createBook.bookId;
     res.status(200).json({
