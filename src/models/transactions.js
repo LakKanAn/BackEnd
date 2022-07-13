@@ -7,6 +7,7 @@ async function create(data) {
     data.transactionId = transactions.id;
     transactions.set(data, { merge: true });
   } catch (err) {
+    console.log(err);
     return null;
   }
 }

@@ -82,13 +82,14 @@ async function getBookAll(userId) {
 }
 async function getBookById(userId, bookId) {
   try {
-    const book = await db
-      .collection(collectionName)
-      .doc(userId)
-      .collection(subCollectionName)
-      .doc(bookId)
-      .get();
-
+    const book = await (
+      await db
+        .collection(collectionName)
+        .doc(userId)
+        .collection(subCollectionName)
+        .doc(bookId)
+        .get()
+    ).data();
     return book;
   } catch (err) {
     return null;

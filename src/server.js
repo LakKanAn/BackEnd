@@ -20,6 +20,7 @@ const siteRouter = require("./routes/site");
 const userRouter = require("./routes/user");
 const distributorRouter = require("./routes/distributor");
 const marketRouter = require("./routes/market");
+const paymentRouter = require("./routes/payment");
 //docs API
 // if (process.env.NODE_ENV != "production") {
 //   const swaggerUi = require("swagger-ui-express");
@@ -32,6 +33,7 @@ app.use(`${API_PATH}/market`, marketRouter);
 app.use(`${API_PATH}/site/`, siteRouter);
 app.use(`${API_PATH}/users/`, userRouter);
 app.use(`${API_PATH}/distributors/`, distributorRouter);
+app.use(`${API_PATH}/confirm/`, paymentRouter);
 
 app.get("/", (req, res) => {
   res.json({
