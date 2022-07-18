@@ -25,7 +25,7 @@ exports.create = async (req, res, next) => {
       });
       const paymentIntent = await stripe.paymentIntents.create({
         customer: customer.id,
-        amount: book.price + 000,
+        amount: book.price * 100,
         currency: "thb",
         payment_method_types: ["card"],
       });
