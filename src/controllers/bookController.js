@@ -5,7 +5,6 @@ const minioService = require("../services/minio");
 
 exports.getAll = async (req, res, next) => {
   try {
-    console.log("ascsdvsdbv");
     let books = [];
     let bookImages = [];
     const snapshot = await bookModel.getBookAll();
@@ -76,20 +75,34 @@ exports.getById = async (req, res, next) => {
 exports.getByCategoryAndGenre = async (req, res, next) => {
   try {
     const category = req.query.category;
-    const genre = req.body.Genre;
+    const genre = req.query.genre;
     let books = [];
     let bookImages = [];
-    const snapshotCategory = await bookModel.getByCategory(category);
-    snapshotCategory.forEach((doc) => {
-      let data = doc.data();
-      books.push({ ...data, id: doc.id });
-    });
-    // const snapshotGenre = await bookModel.getByGenre(genre);
-    // snapshotGenre.forEach((doc) => {
-    //   let data = doc.data();
-    //   books.push({ ...data, id: doc.id });
-    // });
-    // console.log(books);
+    if (genre && category) {
+      const snapshotCategoryAndGenre = await bookModel.getByCategoryAndGenre(
+        category,
+        genre
+      );
+      snapshotCategoryAndGenre.forEach((doc) => {
+        let data = doc.data();
+        books.push({ ...data, id: doc.id });
+      });
+    }
+
+    if (genre === undefined) {
+      const snapshotCategory = await bookModel.getByCategory(category);
+      snapshotCategory.forEach((doc) => {
+        let data = doc.data();
+        books.push({ ...data, id: doc.id });
+      });
+    }
+    if (category === undefined) {
+      const snapshotGenre = await bookModel.getByGenre(genre);
+      snapshotGenre.forEach((doc) => {
+        let data = doc.data();
+        books.push({ ...data, id: doc.id });
+      });
+    }
 
     if (books.length === 0) {
       res.status(404).json({ status: 404, msg: "Don't have any book" });

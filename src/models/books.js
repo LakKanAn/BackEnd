@@ -41,7 +41,6 @@ async function getBookById(bookId) {
 
 async function getByCategory(category) {
   try {
-    console.log(category);
     const book = await db
       .collection(collectionName)
       .where("category", "==", category)
@@ -56,6 +55,31 @@ async function getByGenre(genre) {
   try {
     const book = await db
       .collection(collectionName)
+      .where("genre", "array-contains", genre)
+      .get();
+    return book;
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
+async function getByCategory(category) {
+  try {
+    const book = await db
+      .collection(collectionName)
+      .where("category", "==", category)
+      .get();
+    return book;
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
+async function getByCategoryAndGenre(category, genre) {
+  try {
+    const book = await db
+      .collection(collectionName)
+      .where("category", "==", category)
       .where("genre", "array-contains", genre)
       .get();
     return book;
@@ -124,5 +148,6 @@ module.exports = {
   getBookById,
   getByCategory,
   getByGenre,
+  getByCategoryAndGenre,
   search,
 };
