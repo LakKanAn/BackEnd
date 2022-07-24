@@ -1,6 +1,5 @@
-const stripe = require("stripe")(
-  "sk_test_51L035SAvigZBFU12Ze2gPRfAPvaNKkhYEYQvbWh5JDxXrsC02WCWAGqQPCqhmXOd01IEDwm2k1Ff49pt5PFDVszv00nXM5JGy5"
-);
+const KEY = process.env.STRIPE_KEY;
+const stripe = require("stripe")(KEY);
 const { admin, firestore } = require("../../db/db");
 const userModel = require("../models/users");
 const bookModel = require("../models/books");

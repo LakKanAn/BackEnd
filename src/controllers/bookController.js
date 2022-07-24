@@ -1,19 +1,15 @@
 const { admin, firestore } = require("../../db/db");
 const bookModel = require("../models/books");
-const nodemailer = require("nodemailer");
-const { nanoid } = require("nanoid");
 const { validationResult } = require("express-validator");
 const minioService = require("../services/minio");
-const userModel = require("../models/users");
-const transactionModel = require("../models/transactions");
-const GMAIL = process.env.GMAIL_EMAIL;
-const PASSWORD = process.env.GMAIL_PASSWORD;
+
 exports.getAll = async (req, res, next) => {
   try {
+    console.log("ascsdvsdbv");
     let books = [];
     let bookImages = [];
-    const snapshop = await bookModel.getBookAll();
-    snapshop.forEach((doc) => {
+    const snapshot = await bookModel.getBookAll();
+    snapshot.forEach((doc) => {
       let data = doc.data();
       books.push({ ...data, id: doc.id });
     });
@@ -67,6 +63,84 @@ exports.getById = async (req, res, next) => {
       res.status(200).json({
         status: 200,
         BookDetails: book,
+      });
+    }
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 404;
+    }
+    next(error);
+  }
+};
+
+exports.getByCategoryAndGenre = async (req, res, next) => {
+  try {
+    const category = req.query.category;
+    const genre = req.body.Genre;
+    let books = [];
+    let bookImages = [];
+    const snapshotCategory = await bookModel.getByCategory(category);
+    snapshotCategory.forEach((doc) => {
+      let data = doc.data();
+      books.push({ ...data, id: doc.id });
+    });
+    // const snapshotGenre = await bookModel.getByGenre(genre);
+    // snapshotGenre.forEach((doc) => {
+    //   let data = doc.data();
+    //   books.push({ ...data, id: doc.id });
+    // });
+    // console.log(books);
+
+    if (books.length === 0) {
+      res.status(404).json({ status: 404, msg: "Don't have any book" });
+    } else if (books.release === false) {
+      res.status(404).json({ status: 404, msg: "Don't have any book" });
+    } else {
+      for (let i = 0; i < books.length; i++) {
+        bookImages.push(await minioService.getCoverBook(books[i].bookImage));
+      }
+      for (let i = 0; i < books.length; i++) {
+        const buffer = books[i];
+        buffer.bookImage = bookImages[i];
+      }
+      res.status(200).json({
+        status: 200,
+        bookDetail: books,
+      });
+    }
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 404;
+    }
+    next(error);
+  }
+};
+
+exports.search = async (req, res, next) => {
+  try {
+    const bookTitle = req.query.bookTitle;
+    let books = [];
+    let bookImages = [];
+    const snapshotSearch = await bookModel.search(bookTitle);
+    snapshotSearch.forEach((doc) => {
+      let data = doc.data();
+      books.push({ ...data, id: doc.id });
+    });
+    if (books.length === 0) {
+      res.status(404).json({ status: 404, msg: "Don't have any book" });
+    } else if (books.release === false) {
+      res.status(404).json({ status: 404, msg: "Don't have any book" });
+    } else {
+      for (let i = 0; i < books.length; i++) {
+        bookImages.push(await minioService.getCoverBook(books[i].bookImage));
+      }
+      for (let i = 0; i < books.length; i++) {
+        const buffer = books[i];
+        buffer.bookImage = bookImages[i];
+      }
+      res.status(200).json({
+        status: 200,
+        bookDetail: books,
       });
     }
   } catch (error) {

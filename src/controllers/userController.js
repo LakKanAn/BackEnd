@@ -3,6 +3,7 @@ const userModel = require("../models/users");
 const bookModel = require("../models/books");
 const { validationResult } = require("express-validator");
 const minioService = require("../services/minio");
+
 exports.registration = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

@@ -38,6 +38,47 @@ async function getBookById(bookId) {
     null;
   }
 }
+
+async function getByCategory(category) {
+  try {
+    console.log(category);
+    const book = await db
+      .collection(collectionName)
+      .where("category", "==", category)
+      .get();
+    return book;
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
+async function getByGenre(genre) {
+  try {
+    const book = await db
+      .collection(collectionName)
+      .where("genre", "array-contains", genre)
+      .get();
+    return book;
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
+
+async function search(bookTitle) {
+  try {
+    const book = await db
+      .collection(collectionName)
+      .where("bookTitle", ">=", bookTitle)
+      .orderBy("bookTitle", "asc")
+      .get();
+    return book;
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
+
 async function createBook(data) {
   try {
     const newBook = await db.collection(collectionName).doc();
@@ -81,4 +122,7 @@ module.exports = {
   /// for general
   getBookAll,
   getBookById,
+  getByCategory,
+  getByGenre,
+  search,
 };
