@@ -55,7 +55,7 @@ async function getByGenre(genre) {
   try {
     const book = await db
       .collection(collectionName)
-      .where("genre", "array-contains", genre)
+      .where("genre", "array-contains-any", genre)
       .get();
     return book;
   } catch (err) {

@@ -76,6 +76,7 @@ exports.getByCategoryAndGenre = async (req, res, next) => {
   try {
     const category = req.query.category;
     const genre = req.query.genre;
+    const separateGenre = genre.split("-");
     let books = [];
     let bookImages = [];
     if (genre && category) {
@@ -97,7 +98,7 @@ exports.getByCategoryAndGenre = async (req, res, next) => {
       });
     }
     if (category === undefined) {
-      const snapshotGenre = await bookModel.getByGenre(genre);
+      const snapshotGenre = await bookModel.getByGenre(separateGenre);
       snapshotGenre.forEach((doc) => {
         let data = doc.data();
         books.push({ ...data, id: doc.id });
