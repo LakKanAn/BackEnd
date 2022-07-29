@@ -1,5 +1,7 @@
 const { db } = require("../../db/db");
 const collectionName = "books";
+const firebase = require("../../db/db");
+const increment = firebase.admin.firestore.FieldValue.increment(1);
 
 async function getBookAllByDistributor(distributorId) {
   try {
@@ -14,11 +16,13 @@ async function getBookAllByDistributor(distributorId) {
   }
 }
 
-async function getBookAll() {
+async function getBookAll(perPage, currentPage) {
   try {
     const books = await db
       .collection(collectionName)
       .where("release", "==", true)
+      .limit(perPage)
+      .offset(currentPage * perPage)
       .get();
     return books;
   } catch (err) {
@@ -51,11 +55,13 @@ async function getByCategory(category) {
     null;
   }
 }
-async function getByGenre(genre) {
+async function getByGenre(genre, perPage, currentPage) {
   try {
     const book = await db
       .collection(collectionName)
       .where("genre", "array-contains-any", genre)
+      .limit(perPage)
+      .offset(currentPage * perPage)
       .get();
     return book;
   } catch (err) {
@@ -63,11 +69,13 @@ async function getByGenre(genre) {
     null;
   }
 }
-async function getByCategory(category) {
+async function getByCategory(category, perPage, currentPage) {
   try {
     const book = await db
       .collection(collectionName)
       .where("category", "==", category)
+      .limit(perPage)
+      .offset(currentPage * perPage)
       .get();
     return book;
   } catch (err) {
@@ -75,12 +83,14 @@ async function getByCategory(category) {
     null;
   }
 }
-async function getByCategoryAndGenre(category, genre) {
+async function getByCategoryAndGenre(category, genre, perPage, currentPage) {
   try {
     const book = await db
       .collection(collectionName)
       .where("category", "==", category)
       .where("genre", "array-contains", genre)
+      .limit(perPage)
+      .offset(currentPage * perPage)
       .get();
     return book;
   } catch (err) {
@@ -89,12 +99,14 @@ async function getByCategoryAndGenre(category, genre) {
   }
 }
 
-async function search(bookTitle) {
+async function search(bookTitle, perPage, currentPage) {
   try {
     const book = await db
       .collection(collectionName)
       .where("bookTitle", ">=", bookTitle)
       .orderBy("bookTitle", "asc")
+      .limit(perPage)
+      .offset(currentPage * perPage)
       .get();
     return book;
   } catch (err) {
@@ -108,6 +120,10 @@ async function createBook(data) {
     const newBook = await db.collection(collectionName).doc();
     data.bookId = newBook.id;
     newBook.create(data);
+    await db
+      .collection("stats")
+      .doc(collectionName)
+      .set({ totalBooks: increment }, { merge: true });
 
     return newBook;
   } catch (err) {
@@ -131,6 +147,15 @@ async function updateBook(bookId, data) {
 async function deleteBook(distributorId, bookId) {
   try {
     await db.collection(collectionName).doc(bookId).delete();
+
+    const stats = await (
+      await db.collection("stats").doc(collectionName).get()
+    ).data();
+    const decrement = stats.totalBooks - 1;
+    await db
+      .collection("stats")
+      .doc(collectionName)
+      .set({ totalBooks: decrement }, { merge: true });
   } catch (err) {
     console.log(err);
     null;

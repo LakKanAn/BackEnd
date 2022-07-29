@@ -1,16 +1,22 @@
 const { admin, firestore } = require("../../db/db");
 const bookModel = require("../models/books");
+const statsModel = require("../models/stats");
 const { validationResult } = require("express-validator");
 const minioService = require("../services/minio");
 
 exports.getAll = async (req, res, next) => {
   try {
+    const perPage = parseInt(req.query.perpage) || 40;
+    const currentPage = req.query.page - 1 || 0;
+    const stats = await statsModel.getStatsBook();
+    let totalPage = Math.ceil(stats.totalBooks / perPage);
     let books = [];
     let bookImages = [];
-    const snapshot = await bookModel.getBookAll();
+    const snapshot = await bookModel.getBookAll(perPage, currentPage);
     snapshot.forEach((doc) => {
       let data = doc.data();
       books.push({ ...data, id: doc.id });
+      console.log(doc.size);
     });
     for (let i = 0; i < books.length; i++) {
       bookImages.push(await minioService.getCoverBook(books[i].bookImage));
@@ -22,6 +28,11 @@ exports.getAll = async (req, res, next) => {
     res.status(200).json({
       status: 200,
       books: books,
+      config: {
+        currentPage: currentPage + 1,
+        perPage: parseInt(req.query.perpage) || perPage,
+        totalPage: totalPage,
+      },
     });
   } catch (error) {
     if (!error.statusCode) {
@@ -76,13 +87,18 @@ exports.getByCategoryAndGenre = async (req, res, next) => {
   try {
     const category = req.query.category;
     const genre = req.query.genre;
+    const perPage = parseInt(req.query.perpage) || 40;
+    const currentPage = req.query.page - 1 || 0;
     const separateGenre = genre.split("-");
     let books = [];
     let bookImages = [];
+    console.log(category, genre, perPage, currentPage);
     if (genre && category) {
       const snapshotCategoryAndGenre = await bookModel.getByCategoryAndGenre(
         category,
-        genre
+        genre,
+        perPage,
+        currentPage
       );
       snapshotCategoryAndGenre.forEach((doc) => {
         let data = doc.data();
@@ -91,14 +107,22 @@ exports.getByCategoryAndGenre = async (req, res, next) => {
     }
 
     if (genre === undefined) {
-      const snapshotCategory = await bookModel.getByCategory(category);
+      const snapshotCategory = await bookModel.getByCategory(
+        category,
+        perPage,
+        currentPage
+      );
       snapshotCategory.forEach((doc) => {
         let data = doc.data();
         books.push({ ...data, id: doc.id });
       });
     }
     if (category === undefined) {
-      const snapshotGenre = await bookModel.getByGenre(separateGenre);
+      const snapshotGenre = await bookModel.getByGenre(
+        separateGenre,
+        perPage,
+        currentPage
+      );
       snapshotGenre.forEach((doc) => {
         let data = doc.data();
         books.push({ ...data, id: doc.id });
@@ -120,6 +144,10 @@ exports.getByCategoryAndGenre = async (req, res, next) => {
       res.status(200).json({
         status: 200,
         bookDetail: books,
+        config: {
+          currentPage: currentPage + 1,
+          perPage: parseInt(req.query.perpage) || perPage,
+        },
       });
     }
   } catch (error) {
@@ -133,9 +161,15 @@ exports.getByCategoryAndGenre = async (req, res, next) => {
 exports.search = async (req, res, next) => {
   try {
     const bookTitle = req.query.bookTitle;
+    const perPage = parseInt(req.query.perpage) || 40;
+    const currentPage = req.query.page - 1 || 0;
     let books = [];
     let bookImages = [];
-    const snapshotSearch = await bookModel.search(bookTitle);
+    const snapshotSearch = await bookModel.search(
+      bookTitle,
+      perPage,
+      currentPage
+    );
     snapshotSearch.forEach((doc) => {
       let data = doc.data();
       books.push({ ...data, id: doc.id });
@@ -155,6 +189,10 @@ exports.search = async (req, res, next) => {
       res.status(200).json({
         status: 200,
         bookDetail: books,
+        config: {
+          currentPage: currentPage + 1,
+          perPage: parseInt(req.query.perpage) || perPage,
+        },
       });
     }
   } catch (error) {
