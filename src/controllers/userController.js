@@ -77,7 +77,7 @@ exports.getById = async (req, res, next) => {
       console.log(bookshelf);
       return res.status(404).json({ status: 404, msg: "Don't have any book" });
     } else {
-      const book = await bookModel.getBookById(bookshelf.data().bookId);
+      const book = await bookModel.getBookById(bookshelf.bookId);
       const coverBook = await minioService.getCoverBook(book.bookImage);
       const contentBook = await minioService.getContentBook(book.bookImage);
       book.bookImage = coverBook;

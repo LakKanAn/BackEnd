@@ -1,4 +1,3 @@
-const e = require("express");
 const { db } = require("../../db/db");
 const collectionName = "users";
 const subCollectionName = "bookshelf";
@@ -60,7 +59,7 @@ async function addBook(userId, bookId) {
       .doc(userId)
       .collection(subCollectionName)
       .doc(bookId)
-      .set({ bookId: bookId }, { merge: true });
+      .set({ bookId: bookId, exchange: false, owner: userId }, { merge: true });
     return bookId;
   } catch (err) {
     console.log(err);
@@ -96,6 +95,20 @@ async function getBookById(userId, bookId) {
   }
 }
 
+//// BookExchange
+async function postBook(userId, bookId) {
+  try {
+    const book = await db
+      .collection(collectionName)
+      .doc(userId)
+      .collection(subCollectionName)
+      .doc(bookId)
+      .set({ exchange: true }, { merge: true });
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
 module.exports = {
   getAll,
   getById,
@@ -105,4 +118,5 @@ module.exports = {
   addBook,
   getBookAll,
   getBookById,
+  postBook,
 };

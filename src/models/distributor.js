@@ -1,6 +1,5 @@
 const { db } = require("../../db/db");
 const collectionName = "distributors";
-const subCollectionName = "books";
 
 async function getAll() {}
 
