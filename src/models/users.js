@@ -95,20 +95,6 @@ async function getBookById(userId, bookId) {
   }
 }
 
-//// BookExchange
-async function postBook(userId, bookId) {
-  try {
-    const book = await db
-      .collection(collectionName)
-      .doc(userId)
-      .collection(subCollectionName)
-      .doc(bookId)
-      .set({ exchange: true }, { merge: true });
-  } catch (err) {
-    console.log(err);
-    null;
-  }
-}
 module.exports = {
   getAll,
   getById,
@@ -118,5 +104,4 @@ module.exports = {
   addBook,
   getBookAll,
   getBookById,
-  postBook,
 };

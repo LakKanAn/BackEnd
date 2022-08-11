@@ -13,4 +13,15 @@ async function getStatsBook(perPage, currentPage) {
     null;
   }
 }
-module.exports = { getStatsBook };
+async function getStatsOffer(perPage, currentPage) {
+  try {
+    const stats = await (
+      await db.collection(collectionName).doc("offer").get()
+    ).data();
+    return stats;
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
+module.exports = { getStatsBook, getStatsOffer };
