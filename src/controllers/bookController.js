@@ -16,7 +16,6 @@ exports.getAll = async (req, res, next) => {
     snapshot.forEach((doc) => {
       let data = doc.data();
       books.push({ ...data, id: doc.id });
-      console.log(doc.size);
     });
     for (let i = 0; i < books.length; i++) {
       bookImages.push(await minioService.getCoverBook(books[i].bookImage));
@@ -92,7 +91,6 @@ exports.getByCategoryAndGenre = async (req, res, next) => {
     const separateGenre = genre.split("-");
     let books = [];
     let bookImages = [];
-    console.log(category, genre, perPage, currentPage);
     if (genre && category) {
       const snapshotCategoryAndGenre = await bookModel.getByCategoryAndGenre(
         category,

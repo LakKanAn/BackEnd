@@ -74,7 +74,6 @@ exports.getById = async (req, res, next) => {
     const bookId = req.params.bookId;
     const bookshelf = await userModel.getBookById(userId, bookId);
     if (bookshelf.empty) {
-      console.log(bookshelf);
       return res.status(404).json({ status: 404, msg: "Don't have any book" });
     } else {
       const book = await bookModel.getBookById(bookshelf.bookId);
