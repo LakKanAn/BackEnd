@@ -54,20 +54,38 @@ exports.getById = async (req, res, next) => {
     const tradeDetail = await tradeModel.getById(offerId);
     if (tradeDetail.empty) {
       return res.status(404).json({ status: 404, msg: "Don't have any book" });
-    } else {
-      const ownerData = await userModel.getById(tradeDetail.owner_userId);
-      let ownerDetails = {
-        name: ownerData.displayName,
-        email: ownerData.email,
-      };
-      const book = await bookModel.getBookById(tradeDetail.owner_bookId);
-      const coverBook = await minioService.getCoverBook(book.bookImage);
-      book.bookImage = coverBook;
-      res.status(200).json({
+    }
+    const ownerData = await userModel.getById(tradeDetail.owner_userId);
+    let ownerDetails = {
+      name: ownerData.displayName,
+      email: ownerData.email,
+    };
+    const book = await bookModel.getBookById(tradeDetail.owner_bookId);
+    const coverBook = await minioService.getCoverBook(book.bookImage);
+    book.bookImage = coverBook;
+    let booksAndUserName = [];
+    const offerDetails = Object.values(tradeDetail.offers);
+    if (offerDetails.length > 0) {
+      for (let i = 0; i < offerDetails.length; i++) {
+        booksAndUserName.push(
+          await bookModel.getBookById(offerDetails[i].offer_bookId)
+        );
+        booksAndUserName.push(offerDetails[i].displayName);
+      }
+      return res.status(200).json({
         status: 200,
         ownerDetails: ownerDetails,
         tradeDetail: tradeDetail.timeSet + "day",
         BookDetails: book,
+        offerDetails: booksAndUserName,
+      });
+    } else {
+      return res.status(200).json({
+        status: 200,
+        ownerDetails: ownerDetails,
+        tradeDetail: tradeDetail.timeSet + "day",
+        BookDetails: book,
+        offerDetails: "Don't have any offers",
       });
     }
   } catch (error) {
@@ -94,6 +112,7 @@ exports.post = async (req, res, next) => {
     data.timeSet = timeSet;
     data.owner_bookId = bookId;
     data.owner_userId = userId;
+    data.offers = {};
     await tradeModel.postBook(userId, bookId, data);
     return res.status(200).json({ msg: "this book is now post to exchange!" });
   } catch (error) {
@@ -111,7 +130,7 @@ exports.Offer = async (req, res, next) => {
     const bookId = req.body.bookId;
     const checkOwner = await userModel.getBookById(userId, bookId);
     const tradeDetail = await tradeModel.getById(offerId);
-    if (checkOwner.empty) {
+    if (checkOwner == undefined) {
       return res.status(404).json({ msg: "permission denied" });
     }
     if (tradeDetail.owner_userId == userId) {
