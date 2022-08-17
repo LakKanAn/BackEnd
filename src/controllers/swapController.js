@@ -6,6 +6,7 @@ const tradeModel = require("../models/trade");
 const { validationResult } = require("express-validator");
 const minioService = require("../services/minio");
 const dayjs = require("dayjs");
+const { nanoid } = require("nanoid");
 
 exports.getAll = async (req, res, next) => {
   try {
@@ -50,9 +51,9 @@ exports.getAll = async (req, res, next) => {
 
 exports.getById = async (req, res, next) => {
   try {
-    const offerId = req.params.offerId;
-    const tradeDetail = await tradeModel.getById(offerId);
-    if (tradeDetail.empty) {
+    const postId = req.params.postId;
+    const postDetail = await tradeModel.getById(postId);
+    if (postDetail == undefined) {
       return res.status(404).json({ status: 404, msg: "Don't have any book" });
     }
     const ownerData = await userModel.getById(tradeDetail.owner_userId);
@@ -101,7 +102,6 @@ exports.post = async (req, res, next) => {
     const userId = req.userId;
     const bookId = req.params.bookId;
     const timeSet = parseInt(req.body.timeSet);
-    // const timeLimit = dayjs().add(timeSet, "day").toDate();
     const checkBook = await userModel.getBookById(userId, bookId);
     if (checkBook.exchange == true) {
       return res
@@ -126,34 +126,32 @@ exports.post = async (req, res, next) => {
 exports.Offer = async (req, res, next) => {
   try {
     const userId = req.userId;
-    const offerId = req.params.offerId;
+    const postId = req.params.postId;
     const bookId = req.body.bookId;
+    const offerId = nanoid();
     const checkOwner = await userModel.getBookById(userId, bookId);
-    const tradeDetail = await tradeModel.getById(offerId);
+    const postDetail = await tradeModel.getById(postId);
     if (checkOwner == undefined) {
       return res.status(404).json({ msg: "permission denied" });
     }
-    if (tradeDetail.owner_userId == userId) {
+    if (postDetail.owner_userId == userId) {
       return res.status(200).json({ msg: "you can't not exchange your book" });
     } else {
       const offerData = await userModel.getById(userId);
       const offers = {
-        [userId]: {
+        [offerId]: {
+          userId: offerData.userId,
           displayName: offerData.displayName,
           offer_bookId: bookId,
         },
       };
       let data = {};
       data.offers = offers;
-      await tradeModel.postOffer(offerId, data);
+      await tradeModel.postOffer(postId, data);
       return res
         .status(200)
         .json({ status: 200, msg: "offer added successfully" });
     }
-
-    // const ownerBook = await userModel.getBookAll()
-    // const timeSet = parseInt(req.body.timeSet);
-    // const timeLimit = dayjs().add(timeSet, "day").toDate();
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 404;
@@ -161,3 +159,34 @@ exports.Offer = async (req, res, next) => {
     next(error);
   }
 };
+exports.confirm = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const postId = req.params.postId;
+    const offerId = req.params.offerId;
+    const postDetails = await tradeModel.getById(postId);
+    const during = dayjs().add(postDetails.timeSet, "day").toDate();
+    let offerData = {
+      exchangeId: postId,
+      during: during,
+      [userId]: {
+        bookId: postDetails.offers[offerId].offer_bookId,
+      },
+      [postDetails.offers[offerId].userId]: {
+        bookId: postDetails.owner_bookId,
+      },
+    };
+    const confirm = await tradeModel.confirm(postId, offerData);
+
+    return res.status(200).json({ status: 200, offerData });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 404;
+    }
+    next(error);
+  }
+};
+
+exports.notifyOffer = async (req, res, next) => {};
+
+exports.notifyConfirm = async (req, res, next) => {};
