@@ -59,7 +59,10 @@ async function addBook(userId, bookId) {
       .doc(userId)
       .collection(subCollectionName)
       .doc(bookId)
-      .set({ bookId: bookId, exchange: false, owner: userId }, { merge: true });
+      .set(
+        { bookId: bookId, exchange: false, post: false, owner: userId },
+        { merge: true }
+      );
     return bookId;
   } catch (err) {
     console.log(err);
@@ -73,6 +76,7 @@ async function getBookAll(userId) {
       .collection(collectionName)
       .doc(userId)
       .collection(subCollectionName)
+      .where("exchange", "==", false)
       .get();
     return bookshelf;
   } catch (error) {

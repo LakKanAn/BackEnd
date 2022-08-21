@@ -103,7 +103,7 @@ exports.post = async (req, res, next) => {
     const bookId = req.params.bookId;
     const timeSet = parseInt(req.body.timeSet);
     const checkBook = await userModel.getBookById(userId, bookId);
-    if (checkBook.exchange == true) {
+    if (checkBook.post == true) {
       return res
         .status(404)
         .json({ msg: "this book has already post to exchange" });
@@ -159,6 +159,7 @@ exports.Offer = async (req, res, next) => {
     next(error);
   }
 };
+////ownerPost confirm
 exports.confirm = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -176,7 +177,18 @@ exports.confirm = async (req, res, next) => {
         bookId: postDetails.owner_bookId,
       },
     };
-    const confirm = await tradeModel.confirm(postId, offerData);
+    const ownerUserId = userId;
+    const offerUserId = postDetails.offers[offerId].userId;
+    const ownerBookId = postDetails.owner_bookId;
+    const offerBookId = postDetails.offers[offerId].offer_bookId;
+    await tradeModel.confirm(
+      postId,
+      offerData,
+      ownerUserId,
+      offerUserId,
+      ownerBookId,
+      offerBookId
+    );
 
     return res.status(200).json({ status: 200, offerData });
   } catch (error) {

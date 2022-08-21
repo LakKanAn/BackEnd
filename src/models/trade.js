@@ -50,16 +50,16 @@ async function postBook(userId, bookId, data) {
       .doc(userId)
       .collection(collectionBookshelf)
       .doc(bookId)
-      .set({ exchange: true }, { merge: true });
+      .set({ post: true }, { merge: true });
     const newPost = await db.collection(collectionOffer).doc();
     data.postId = newPost.id;
     newPost.create(data);
     await db
       .collection("stats")
-      .doc("offer")
-      .set({ totalOffers: increment }, { merge: true });
+      .doc("trade")
+      .set({ totalPosts: increment }, { merge: true });
 
-    return newBook;
+    return newPost;
   } catch (err) {
     console.log(err);
     null;
@@ -78,17 +78,32 @@ async function postOffer(postId, data) {
   }
 }
 
-async function confirm(postId, exhangeData) {
+async function confirm(
+  postId,
+  exhangeData,
+  ownerUserId,
+  offerUserId,
+  ownerBookId,
+  offerBookId
+) {
   try {
     const confirm = await db
       .collection(collectionExchange)
       .doc(postId)
       .set(exhangeData, { merge: true });
-
-    const deleteOffer = await db
-      .collection(collectionOffer)
-      .doc(postId)
-      .delete();
+    const owner = await db
+      .collection(collectionUsers)
+      .doc(ownerUserId)
+      .collection(collectionBookshelf)
+      .doc(ownerBookId)
+      .set({ exchange: true }, { merge: true });
+    const offer = await db
+      .collection(collectionUsers)
+      .doc(offerUserId)
+      .collection(collectionBookshelf)
+      .doc(offerBookId)
+      .set({ exchange: true }, { merge: true });
+    await db.collection(collectionOffer).doc(postId).delete();
     return confirm;
   } catch (err) {
     console.log(err);
