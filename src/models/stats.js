@@ -13,10 +13,10 @@ async function getStatsBook(perPage, currentPage) {
     null;
   }
 }
-async function getStatsOffer(perPage, currentPage) {
+async function getStatsTrade(perPage, currentPage) {
   try {
     const stats = await (
-      await db.collection(collectionName).doc("offer").get()
+      await db.collection(collectionName).doc("trade").get()
     ).data();
     return stats;
   } catch (err) {
@@ -24,4 +24,4 @@ async function getStatsOffer(perPage, currentPage) {
     null;
   }
 }
-module.exports = { getStatsBook, getStatsOffer };
+module.exports = { getStatsBook, getStatsTrade };

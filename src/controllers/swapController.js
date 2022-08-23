@@ -12,8 +12,8 @@ exports.getAll = async (req, res, next) => {
   try {
     const perPage = parseInt(req.query.perpage) || 9;
     const currentPage = req.query.page - 1 || 0;
-    const stats = await statsModel.getStatsOffer();
-    let totalPage = Math.ceil(stats.totalOffers / perPage);
+    const stats = await statsModel.getStatsTrade();
+    let totalPage = Math.ceil(stats.totalPosts / perPage);
     let books = [];
     let bookImages = [];
     const snapshop = await tradeModel.getAll(perPage, currentPage);
@@ -23,9 +23,11 @@ exports.getAll = async (req, res, next) => {
     });
     let bookDetail = [];
     for (let i = 0; i < books.length; i++) {
+      let postId = books[i].postId;
       let book = await bookModel.getBookById(books[i].owner_bookId);
       let bookImage = await minioService.getCoverBook(book.bookImage);
       bookImages.push(bookImage);
+      book.postId = postId;
       bookDetail.push(book);
     }
     for (let i = 0; i < books.length; i++) {
@@ -54,18 +56,18 @@ exports.getById = async (req, res, next) => {
     const postId = req.params.postId;
     const postDetail = await tradeModel.getById(postId);
     if (postDetail == undefined) {
-      return res.status(404).json({ status: 404, msg: "Don't have any book" });
+      return res.status(404).json({ status: 404, msg: "Don't have any post" });
     }
-    const ownerData = await userModel.getById(tradeDetail.owner_userId);
+    const ownerData = await userModel.getById(postDetail.owner_userId);
     let ownerDetails = {
       name: ownerData.displayName,
       email: ownerData.email,
     };
-    const book = await bookModel.getBookById(tradeDetail.owner_bookId);
+    const book = await bookModel.getBookById(postDetail.owner_bookId);
     const coverBook = await minioService.getCoverBook(book.bookImage);
     book.bookImage = coverBook;
     let booksAndUserName = [];
-    const offerDetails = Object.values(tradeDetail.offers);
+    const offerDetails = Object.values(postDetail.offers);
     if (offerDetails.length > 0) {
       for (let i = 0; i < offerDetails.length; i++) {
         booksAndUserName.push(
@@ -76,7 +78,7 @@ exports.getById = async (req, res, next) => {
       return res.status(200).json({
         status: 200,
         ownerDetails: ownerDetails,
-        tradeDetail: tradeDetail.timeSet + "day",
+        postDetail: postDetail.timeSet + "day",
         BookDetails: book,
         offerDetails: booksAndUserName,
       });
@@ -84,7 +86,7 @@ exports.getById = async (req, res, next) => {
       return res.status(200).json({
         status: 200,
         ownerDetails: ownerDetails,
-        tradeDetail: tradeDetail.timeSet + "day",
+        postDetail: postDetail.timeSet + "day",
         BookDetails: book,
         offerDetails: "Don't have any offers",
       });
@@ -134,6 +136,9 @@ exports.Offer = async (req, res, next) => {
     if (checkOwner == undefined) {
       return res.status(404).json({ msg: "permission denied" });
     }
+    if (postDetail == undefined) {
+      return res.status(404).json({ status: 404, msg: "Don't have any post" });
+    }
     if (postDetail.owner_userId == userId) {
       return res.status(200).json({ msg: "you can't not exchange your book" });
     } else {
@@ -170,11 +175,13 @@ exports.confirm = async (req, res, next) => {
     let offerData = {
       exchangeId: postId,
       during: during,
-      [userId]: {
-        bookId: postDetails.offers[offerId].offer_bookId,
-      },
-      [postDetails.offers[offerId].userId]: {
-        bookId: postDetails.owner_bookId,
+      log: {
+        [userId]: {
+          bookId: postDetails.offers[offerId].offer_bookId,
+        },
+        [postDetails.offers[offerId].userId]: {
+          bookId: postDetails.owner_bookId,
+        },
       },
     };
     const ownerUserId = userId;
@@ -189,8 +196,25 @@ exports.confirm = async (req, res, next) => {
       ownerBookId,
       offerBookId
     );
+    await tradeModel.deletePost(postId);
 
     return res.status(200).json({ status: 200, offerData });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 404;
+    }
+    next(error);
+  }
+};
+
+exports.During = async (req, res, next) => {
+  try {
+    const during = dayjs().toDate();
+    const checkDuring = await tradeModel.checkDuring(during);
+    snapshop.forEach((doc) => {
+      let data = doc.data();
+      books.push({ ...data });
+    });
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 404;

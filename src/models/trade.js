@@ -42,7 +42,6 @@ async function getOwnPost(userId) {
     null;
   }
 }
-
 async function postBook(userId, bookId, data) {
   try {
     await db
@@ -65,7 +64,6 @@ async function postBook(userId, bookId, data) {
     null;
   }
 }
-
 async function postOffer(postId, data) {
   try {
     const addOffer = await db
@@ -77,7 +75,6 @@ async function postOffer(postId, data) {
     null;
   }
 }
-
 async function confirm(
   postId,
   exhangeData,
@@ -103,14 +100,54 @@ async function confirm(
       .collection(collectionBookshelf)
       .doc(offerBookId)
       .set({ exchange: true }, { merge: true });
-    await db.collection(collectionOffer).doc(postId).delete();
+    const deletePost = await db
+      .collection(collectionOffer)
+      .doc(postId)
+      .delete();
+    console.log(deletePost);
     return confirm;
   } catch (err) {
     console.log(err);
     null;
   }
 }
+async function deletePost(postId) {
+  try {
+    const deletePost = await db
+      .collection(collectionOffer)
+      .doc(postId)
+      .delete();
+    console.log(deletePost);
+    return deletePost;
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
+async function getBookTradeById(exchangeId) {
+  try {
+    const exchange = await (
+      await db.collection(collectionExchange).doc(exchangeId).get()
+    ).data();
+    return exchange;
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
+async function checkDuring(during) {
+  try {
+    const During = await db
+      .collection(collectionExchange)
+      .where("during", "<", during)
+      .get();
 
+    return During;
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
 module.exports = {
   getAll,
   postBook,
@@ -118,4 +155,7 @@ module.exports = {
   getOwnPost,
   postOffer,
   confirm,
+  deletePost,
+  getBookTradeById,
+  checkDuring,
 };
