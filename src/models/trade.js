@@ -93,7 +93,7 @@ async function confirm(
       .doc(ownerUserId)
       .collection(collectionBookshelf)
       .doc(ownerBookId)
-      .set({ exchange: true }, { merge: true });
+      .set({ exchange: true, post: false }, { merge: true });
     const offer = await db
       .collection(collectionUsers)
       .doc(offerUserId)
@@ -104,7 +104,6 @@ async function confirm(
       .collection(collectionOffer)
       .doc(postId)
       .delete();
-    console.log(deletePost);
     return confirm;
   } catch (err) {
     console.log(err);
@@ -117,7 +116,6 @@ async function deletePost(postId) {
       .collection(collectionOffer)
       .doc(postId)
       .delete();
-    console.log(deletePost);
     return deletePost;
   } catch (err) {
     console.log(err);
@@ -148,6 +146,33 @@ async function checkDuring(during) {
     null;
   }
 }
+async function rollback(userId, bookId) {
+  try {
+    await db
+      .collection(collectionUsers)
+      .doc(userId)
+      .collection(collectionBookshelf)
+      .doc(bookId)
+      .set({ post: false, exchange: false }, { merge: true });
+    // await db .collection(collectionExchange).
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
+async function deleteExchange(exchangeId) {
+  try {
+    const deleteExchange = await db
+      .collection(collectionExchange)
+      .doc(exchangeId)
+      .delete();
+
+    return deleteExchange;
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
 module.exports = {
   getAll,
   postBook,
@@ -158,4 +183,6 @@ module.exports = {
   deletePost,
   getBookTradeById,
   checkDuring,
+  rollback,
+  deleteExchange,
 };

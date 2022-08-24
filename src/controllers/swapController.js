@@ -227,47 +227,21 @@ exports.During = async (req, res, next) => {
       let data = doc.data();
       lists.push({ ...data });
     });
+    if (lists.length == 0) {
+      return res.status(200).json({ status: 200, msg: "noting to update" });
+    }
 
     let logData = [];
-    for (const [key, value] of Object.entries(lists)) {
-      logData.push(Object.values(value["log"]));
-
-      // console.log(JSON.stringify(log));
+    for (const [key, value] of Object.entries(lists[0].log)) {
+      logData.push({ userId: key, bookId: value.bookId });
     }
-    console.log(logData);
-
-    // for (let i = 0; i < lists.length; i++) {
-    //   let userId = Object.keys(lists[i].log);
-    //   let bookId = Object.values(lists[i].log);
-    //   if (bookId) {
-    //     bookId = bookId.map((item) => {
-    //       return Object.values(item)[0];
-    //     });
-    //   }
-    //   let data = [];
-    //   data.push({ userId, bookId });
-    //   // for (let j = 0; j < userId.length; j++) {
-    //   //   const item = userId[j];
-    //   //   console.log(userId);
-
-    //   //   console.log(bookId[j]);
-    //   //   console.log(data[0].userId[j]);
-    //   // }
-    //   for (let j = 0; j < data.length; j++) {
-    //     const item = userId[j];
-    //     console.log(data.length);
-    //     // console.log(item.bookId[j]);
-
-    //     // console.log(bookId[j]);
-    //     // console.log(data[0].userId[j]);
-    //   }
-    // }
-
-    // // let array = ["0", "1"];
-    // // array.forEach((item) => {
-    // //   console.log(item);
-    // // });
-    // // console.log(Object.values(lists));
+    for (let i = 0; i < logData.length; i++) {
+      const userId = logData[i].userId;
+      const bookId = logData[i].bookId;
+      await tradeModel.rollback(userId, bookId);
+    }
+    await tradeModel.deleteExchange(lists[0].exchangeId);
+    return res.status(200).json({ status: 200, msg: "update successfully" });
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 404;
