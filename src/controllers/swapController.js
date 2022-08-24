@@ -141,6 +141,17 @@ exports.Offer = async (req, res, next) => {
     }
     if (postDetail.owner_userId == userId) {
       return res.status(200).json({ msg: "you can't not exchange your book" });
+    }
+    let offerData = {};
+    for (const [key, value] of Object.entries(postDetail.offers)) {
+      offerData.BookId = value["offer_bookId"];
+      offerData.userId = value["userId"];
+    }
+    if (offerData.BookId == bookId && offerData.userId == userId) {
+      return res.status(200).json({
+        status: 200,
+        msg: "you already offer this book for this post",
+      });
     } else {
       const offerData = await userModel.getById(userId);
       const offers = {
@@ -211,10 +222,52 @@ exports.During = async (req, res, next) => {
   try {
     const during = dayjs().toDate();
     const checkDuring = await tradeModel.checkDuring(during);
-    snapshop.forEach((doc) => {
+    let lists = [];
+    checkDuring.forEach((doc) => {
       let data = doc.data();
-      books.push({ ...data });
+      lists.push({ ...data });
     });
+
+    let logData = [];
+    for (const [key, value] of Object.entries(lists)) {
+      logData.push(Object.values(value["log"]));
+
+      // console.log(JSON.stringify(log));
+    }
+    console.log(logData);
+
+    // for (let i = 0; i < lists.length; i++) {
+    //   let userId = Object.keys(lists[i].log);
+    //   let bookId = Object.values(lists[i].log);
+    //   if (bookId) {
+    //     bookId = bookId.map((item) => {
+    //       return Object.values(item)[0];
+    //     });
+    //   }
+    //   let data = [];
+    //   data.push({ userId, bookId });
+    //   // for (let j = 0; j < userId.length; j++) {
+    //   //   const item = userId[j];
+    //   //   console.log(userId);
+
+    //   //   console.log(bookId[j]);
+    //   //   console.log(data[0].userId[j]);
+    //   // }
+    //   for (let j = 0; j < data.length; j++) {
+    //     const item = userId[j];
+    //     console.log(data.length);
+    //     // console.log(item.bookId[j]);
+
+    //     // console.log(bookId[j]);
+    //     // console.log(data[0].userId[j]);
+    //   }
+    // }
+
+    // // let array = ["0", "1"];
+    // // array.forEach((item) => {
+    // //   console.log(item);
+    // // });
+    // // console.log(Object.values(lists));
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 404;

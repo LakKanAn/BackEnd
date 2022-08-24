@@ -9,6 +9,8 @@ const validatorRegister = [
 const userController = require("../controllers/userController");
 const swapController = require("../controllers/swapController");
 router.get("/", swapController.getAll);
+router.get("/during", swapController.During);
+
 router.post("/confirm/:postId/:offerId", isAuth, swapController.confirm);
 router.get("/:postId", swapController.getById);
 router.post("/:postId", isAuth, swapController.Offer);
