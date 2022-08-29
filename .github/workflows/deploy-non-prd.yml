@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - dev
-      - main
 
 jobs:
   code-testing:
@@ -25,7 +24,7 @@ jobs:
 #         shell: bash
 #         env:
 #           FILE_CONTENT : ${{secrets.ENV_FILE_CONTENT}}
-          
+
 #       - name: Create firebase auth file
 #         run: echo $FILE_CONTENT >> firebase_auth.json
 #         shell: bash
@@ -106,8 +105,8 @@ jobs:
           script: |
             docker pull ghcr.io/lakkanan/backend:${{ env.ENV_NAME }}
             export COMPOSE_IGNORE_ORPHANS=True
-            docker-compose -f ~/docker-compose/${{ env.ENV_NAME }}-app-compose.yml down
-            docker-compose -f ~/docker-compose/${{ env.ENV_NAME }}-app-compose.yml up -d
+            docker-compose -f ~/docker-compose/${{ env.ENV_NAME }}/${{ env.ENV_NAME }}-app-compose.yml down
+            docker-compose -f ~/docker-compose/${{ env.ENV_NAME }}/${{ env.ENV_NAME }}-app-compose.yml up -d
             docker rmi $(docker images | grep "<none>" | awk '{print $3}')
 
   acceptance-testing:
@@ -115,7 +114,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Set env
-        run: echo "ENV_NAME=$( [ $GITHUB_REF == "refs/heads/master" ] && echo 'uat' || echo ${GITHUB_REF##*/} )" >> $GITHUB_ENV
+        run: echo "ENV_NAME=$( [ $GITHUB_REF == "refs/heads/main" ] && echo 'uat' || echo ${GITHUB_REF##*/} )" >> $GITHUB_ENV
       - name: acceptance test
         run: curl https://api${{ env.ENV_NAME }}.lakkanan.shop | grep "/v1 is ready" && echo $?
 
