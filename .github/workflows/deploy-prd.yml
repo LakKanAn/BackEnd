@@ -23,7 +23,6 @@ jobs:
             export COMPOSE_IGNORE_ORPHANS=True
             docker-compose -f ~/docker-compose/prd/app-compose.yml down
             docker-compose -f ~/docker-compose/prd/app-compose.yml up -d
-            docker rmi $(docker images | grep "<none>" | awk '{print $3}')
 
   acceptance-testing:
     needs: deploy
