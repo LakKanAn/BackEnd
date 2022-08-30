@@ -12,7 +12,6 @@ exports.getAll = async (req, res, next) => {
   try {
     const perPage = parseInt(req.query.perpage) || 9;
     const currentPage = req.query.page - 1 || 0;
-    const stats = await statsModel.getStatsTrade();
     let books = [];
     let bookImages = [];
     const snapshot = await tradeModel.getAll(perPage, currentPage);
@@ -25,10 +24,12 @@ exports.getAll = async (req, res, next) => {
     let bookDetail = [];
     for (let i = 0; i < books.length; i++) {
       let postId = books[i].postId;
+      let during = books[i].timeSet;
       let book = await bookModel.getBookById(books[i].owner_bookId);
       let bookImage = await minioService.getCoverBook(book.bookImage);
       bookImages.push(bookImage);
       book.postId = postId;
+      book.during = during;
       bookDetail.push(book);
     }
     for (let i = 0; i < books.length; i++) {
