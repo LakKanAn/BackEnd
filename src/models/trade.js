@@ -30,11 +30,13 @@ async function getById(postId) {
     null;
   }
 }
-async function getOwnPostAll(userId) {
+async function getOwnPostAll(userId, perPage, currentPage) {
   try {
     const Owner = await db
       .collection(collectionOffer)
       .where("owner_userId", "==", userId)
+      .limit(perPage)
+      .offset(currentPage * perPage)
       .get();
     return Owner;
   } catch (err) {
@@ -99,7 +101,7 @@ async function confirm(
       .doc(offerUserId)
       .collection(collectionBookshelf)
       .doc(offerBookId)
-      .set({ exchange: true }, { merge: true });
+      .set({ exchange: true, post: false }, { merge: true });
     const deletePost = await db
       .collection(collectionOffer)
       .doc(postId)
@@ -122,11 +124,12 @@ async function deletePost(postId) {
     null;
   }
 }
-async function getBookTradeAll(userId) {
+async function getBookTradeAll(perPage, currentPage) {
   try {
     const exchange = await db
       .collection(collectionExchange)
-      .where("owner_userId", "==", userId)
+      .limit(perPage)
+      .offset(currentPage * perPage)
       .get();
     return exchange;
   } catch (err) {

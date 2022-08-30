@@ -88,7 +88,7 @@ async function getByCategoryAndGenre(category, genre, perPage, currentPage) {
     const book = await db
       .collection(collectionName)
       .where("category", "==", category)
-      .where("genre", "array-contains", genre)
+      .where("genre", "array-contains-any", genre)
       .limit(perPage)
       .offset(currentPage * perPage)
       .get();

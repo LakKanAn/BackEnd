@@ -70,7 +70,7 @@ async function addBook(userId, bookId) {
   }
 }
 
-async function getBookAll(userId) {
+async function getBookAll(userId, perPage, currentPage) {
   try {
     const bookshelf = await db
       .collection(collectionName)
@@ -78,6 +78,8 @@ async function getBookAll(userId) {
       .collection(subCollectionName)
       .where("post", "==", false)
       .where("exchange", "==", false)
+      .limit(perPage)
+      .offset(currentPage * perPage)
       .get();
     return bookshelf;
   } catch (error) {

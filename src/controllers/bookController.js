@@ -8,8 +8,6 @@ exports.getAll = async (req, res, next) => {
   try {
     const perPage = parseInt(req.query.perpage) || 40;
     const currentPage = req.query.page - 1 || 0;
-    const stats = await statsModel.getStatsBook();
-    let totalPage = Math.ceil(stats.totalBooks / perPage);
     let books = [];
     let bookImages = [];
     const snapshot = await bookModel.getBookAll(perPage, currentPage);
@@ -17,6 +15,8 @@ exports.getAll = async (req, res, next) => {
       let data = doc.data();
       books.push({ ...data, id: doc.id });
     });
+    const countDoc = snapshot.size;
+    let totalPage = Math.ceil(countDoc / perPage);
     for (let i = 0; i < books.length; i++) {
       bookImages.push(await minioService.getCoverBook(books[i].bookImage));
     }
@@ -86,15 +86,20 @@ exports.getByCategoryAndGenre = async (req, res, next) => {
   try {
     const category = req.query.category;
     const genre = req.query.genre;
-    const perPage = parseInt(req.query.perpage) || 40;
+    if (genre === undefined && category === undefined) {
+      return res
+        .status(404)
+        .json({ status: 404, msg: "Please fill in a category or genre" });
+    }
+    const perPage = parseInt(req.query.perpage) || 9;
     const currentPage = req.query.page - 1 || 0;
-    const separateGenre = genre.split("-");
+    let separateGenre = genre ? genre.split("-") : [];
     let books = [];
     let bookImages = [];
     if (genre && category) {
       const snapshotCategoryAndGenre = await bookModel.getByCategoryAndGenre(
         category,
-        genre,
+        separateGenre,
         perPage,
         currentPage
       );
@@ -102,8 +107,25 @@ exports.getByCategoryAndGenre = async (req, res, next) => {
         let data = doc.data();
         books.push({ ...data, id: doc.id });
       });
+      const countDoc = snapshotCategoryAndGenre.size;
+      let totalPage = Math.ceil(countDoc / perPage);
+      for (let i = 0; i < books.length; i++) {
+        bookImages.push(await minioService.getCoverBook(books[i].bookImage));
+      }
+      for (let i = 0; i < books.length; i++) {
+        const buffer = books[i];
+        buffer.bookImage = bookImages[i];
+      }
+      return res.status(200).json({
+        status: 200,
+        bookDetail: books,
+        config: {
+          currentPage: currentPage + 1,
+          perPage: parseInt(req.query.perpage) || perPage,
+          totalPage: totalPage,
+        },
+      });
     }
-
     if (genre === undefined) {
       const snapshotCategory = await bookModel.getByCategory(
         category,
@@ -113,6 +135,24 @@ exports.getByCategoryAndGenre = async (req, res, next) => {
       snapshotCategory.forEach((doc) => {
         let data = doc.data();
         books.push({ ...data, id: doc.id });
+      });
+      const countDoc = snapshotCategory.size;
+      let totalPage = Math.ceil(countDoc / perPage);
+      for (let i = 0; i < books.length; i++) {
+        bookImages.push(await minioService.getCoverBook(books[i].bookImage));
+      }
+      for (let i = 0; i < books.length; i++) {
+        const buffer = books[i];
+        buffer.bookImage = bookImages[i];
+      }
+      return res.status(200).json({
+        status: 200,
+        bookDetail: books,
+        config: {
+          currentPage: currentPage + 1,
+          perPage: parseInt(req.query.perpage) || perPage,
+          totalPage: totalPage,
+        },
       });
     }
     if (category === undefined) {
@@ -125,13 +165,8 @@ exports.getByCategoryAndGenre = async (req, res, next) => {
         let data = doc.data();
         books.push({ ...data, id: doc.id });
       });
-    }
-
-    if (books.length === 0) {
-      res.status(404).json({ status: 404, msg: "Don't have any book" });
-    } else if (books.release === false) {
-      res.status(404).json({ status: 404, msg: "Don't have any book" });
-    } else {
+      const countDoc = snapshotGenre.size;
+      let totalPage = Math.ceil(countDoc / perPage);
       for (let i = 0; i < books.length; i++) {
         bookImages.push(await minioService.getCoverBook(books[i].bookImage));
       }
@@ -139,14 +174,21 @@ exports.getByCategoryAndGenre = async (req, res, next) => {
         const buffer = books[i];
         buffer.bookImage = bookImages[i];
       }
-      res.status(200).json({
+      return res.status(200).json({
         status: 200,
         bookDetail: books,
         config: {
           currentPage: currentPage + 1,
           perPage: parseInt(req.query.perpage) || perPage,
+          totalPage: totalPage,
         },
       });
+    }
+
+    if (books.length === 0 || (genre === undefined && category === undefined)) {
+      return res.status(404).json({ status: 404, msg: "Don't have any book" });
+    } else if (books.release === false) {
+      return res.status(404).json({ status: 404, msg: "Don't have any book" });
     }
   } catch (error) {
     if (!error.statusCode) {
@@ -172,6 +214,8 @@ exports.search = async (req, res, next) => {
       let data = doc.data();
       books.push({ ...data, id: doc.id });
     });
+    const countDoc = snapshot.size;
+    let totalPage = Math.ceil(countDoc / perPage);
     if (books.length === 0) {
       res.status(404).json({ status: 404, msg: "Don't have any book" });
     } else if (books.release === false) {
@@ -190,6 +234,7 @@ exports.search = async (req, res, next) => {
         config: {
           currentPage: currentPage + 1,
           perPage: parseInt(req.query.perpage) || perPage,
+          totalPage: totalPage,
         },
       });
     }

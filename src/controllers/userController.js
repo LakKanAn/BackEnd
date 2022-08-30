@@ -41,14 +41,18 @@ exports.registration = async (req, res, next) => {
 //// page bookshelf
 exports.getAllBooks = async (req, res, next) => {
   try {
+    const perPage = parseInt(req.query.perpage) || 9;
+    const currentPage = req.query.page - 1 || 0;
     const userId = req.userId;
     let bookshelf = [];
     let bookImages = [];
-    const snapshop = await userModel.getBookAll(userId);
-    snapshop.forEach((doc) => {
+    const snapshot = await userModel.getBookAll(userId, perPage, currentPage);
+    snapshot.forEach((doc) => {
       let data = doc.data();
       bookshelf.push({ ...data });
     });
+    const countDoc = snapshot.size;
+    let totalPage = Math.ceil(countDoc / perPage);
     let bookDetail = [];
     for (let i = 0; i < bookshelf.length; i++) {
       let book = await bookModel.getBookById(bookshelf[i].bookId);
@@ -60,7 +64,15 @@ exports.getAllBooks = async (req, res, next) => {
       const buffer = bookDetail[i];
       buffer.bookImage = bookImages[i];
     }
-    res.status(200).json({ status: 200, bookDetail });
+    res.status(200).json({
+      status: 200,
+      bookDetail,
+      config: {
+        currentPage: currentPage + 1,
+        perPage: parseInt(req.query.perpage) || perPage,
+        totalPage: totalPage,
+      },
+    });
   } catch (error) {
     console.log(error);
     if (!error.statusCode) {
@@ -110,15 +122,22 @@ exports.getById = async (req, res, next) => {
 
 exports.getAllPost = async (req, res, next) => {
   try {
+    const perPage = parseInt(req.query.perpage) || 9;
+    const currentPage = req.query.page - 1 || 0;
     const userId = req.userId;
     let bookPost = [];
     let bookImages = [];
-    const snapshop = await tradeModel.getOwnPostAll(userId);
-    snapshop.forEach((doc) => {
+    const snapshot = await tradeModel.getOwnPostAll(
+      userId,
+      perPage,
+      currentPage
+    );
+    snapshot.forEach((doc) => {
       let data = doc.data();
       bookPost.push({ ...data });
     });
-    console.log(bookPost);
+    const countDoc = snapshot.size;
+    let totalPage = Math.ceil(countDoc / perPage);
     let bookDetail = [];
     for (let i = 0; i < bookPost.length; i++) {
       let book = await bookModel.getBookById(bookPost[i].owner_bookId);
@@ -130,7 +149,15 @@ exports.getAllPost = async (req, res, next) => {
       const buffer = bookDetail[i];
       buffer.bookImage = bookImages[i];
     }
-    res.status(200).json({ status: 200, bookDetail });
+    res.status(200).json({
+      status: 200,
+      bookDetail,
+      config: {
+        currentPage: currentPage + 1,
+        perPage: parseInt(req.query.perpage) || perPage,
+        totalPage: totalPage,
+      },
+    });
   } catch (error) {
     console.log(error);
     if (!error.statusCode) {
@@ -192,25 +219,41 @@ exports.getPostById = async (req, res, next) => {
 exports.getAllTrade = async (req, res, next) => {
   try {
     const userId = req.userId;
+    const perPage = parseInt(req.query.perpage) || 9;
+    const currentPage = req.query.page - 1 || 0;
     let bookTrade = [];
     let bookImages = [];
-    const snapshop = await tradeModel.getBookTradeAll(userId);
-    snapshop.forEach((doc) => {
+    const snapshot = await tradeModel.getBookTradeAll(perPage, currentPage);
+    snapshot.forEach((doc) => {
       let data = doc.data();
       bookTrade.push({ ...data });
     });
+    const countDoc = snapshot.size;
+    let totalPage = Math.ceil(countDoc / perPage);
     let bookDetail = [];
     for (let i = 0; i < bookTrade.length; i++) {
-      let book = await bookModel.getBookById(bookTrade[i].bookId);
+      let log = bookTrade[i].log[userId];
+      let book = await bookModel.getBookById(log.bookId);
       let bookImage = await minioService.getCoverBook(book.bookImage);
       bookImages.push(bookImage);
       bookDetail.push(book);
     }
+
     for (let i = 0; i < bookTrade.length; i++) {
+      const exchangeId = bookTrade[i].exchangeId;
       const buffer = bookDetail[i];
       buffer.bookImage = bookImages[i];
+      buffer.exchangeId = exchangeId;
     }
-    res.status(200).json({ status: 200, bookDetail });
+    res.status(200).json({
+      status: 200,
+      bookDetail,
+      config: {
+        currentPage: currentPage + 1,
+        perPage: parseInt(req.query.perpage) || perPage,
+        totalPage: totalPage,
+      },
+    });
   } catch (error) {
     console.log(error);
     if (!error.statusCode) {

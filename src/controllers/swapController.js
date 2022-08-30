@@ -13,14 +13,15 @@ exports.getAll = async (req, res, next) => {
     const perPage = parseInt(req.query.perpage) || 9;
     const currentPage = req.query.page - 1 || 0;
     const stats = await statsModel.getStatsTrade();
-    let totalPage = Math.ceil(stats.totalPosts / perPage);
     let books = [];
     let bookImages = [];
-    const snapshop = await tradeModel.getAll(perPage, currentPage);
-    snapshop.forEach((doc) => {
+    const snapshot = await tradeModel.getAll(perPage, currentPage);
+    snapshot.forEach((doc) => {
       let data = doc.data();
       books.push({ ...data });
     });
+    const countDoc = snapshot.size;
+    let totalPage = Math.ceil(countDoc / perPage);
     let bookDetail = [];
     for (let i = 0; i < books.length; i++) {
       let postId = books[i].postId;
@@ -133,7 +134,11 @@ exports.Offer = async (req, res, next) => {
     const checkOwner = await userModel.getBookById(userId, bookId);
     const postDetail = await tradeModel.getById(postId);
     if (checkOwner == undefined) {
-      return res.status(404).json({ msg: "permission denied" });
+      return res.status(404).json({ status: 404, msg: "permission denied" });
+    } else if (checkOwner.exchange == true) {
+      return res
+        .status(406)
+        .json({ status: 406, msg: "this book already exchange" });
     }
     if (postDetail == undefined) {
       return res.status(404).json({ status: 404, msg: "Don't have any post" });
@@ -181,6 +186,11 @@ exports.confirm = async (req, res, next) => {
     const postId = req.params.postId;
     const offerId = req.params.offerId;
     const postDetails = await tradeModel.getById(postId);
+    if (postDetails === undefined) {
+      return res
+        .status(404)
+        .json({ status: 404, msg: "this post is already confirm" });
+    }
     const during = dayjs().add(postDetails.timeSet, "day").toDate();
     let offerData = {
       exchangeId: postId,
