@@ -76,6 +76,7 @@ async function getBookAll(userId) {
       .collection(collectionName)
       .doc(userId)
       .collection(subCollectionName)
+      .where("post", "==", false)
       .where("exchange", "==", false)
       .get();
     return bookshelf;
@@ -83,19 +84,7 @@ async function getBookAll(userId) {
     return null;
   }
 }
-async function getBookPostAll(userId) {
-  try {
-    const bookshelf = await db
-      .collection(collectionName)
-      .doc(userId)
-      .collection(subCollectionName)
-      .where("exchange", "==", true)
-      .get();
-    return bookshelf;
-  } catch (error) {
-    return null;
-  }
-}
+
 async function getBookById(userId, bookId) {
   try {
     const book = await (
@@ -121,5 +110,4 @@ module.exports = {
   addBook,
   getBookAll,
   getBookById,
-  getBookPostAll,
 };

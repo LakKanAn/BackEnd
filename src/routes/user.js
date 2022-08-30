@@ -12,8 +12,10 @@ const swapController = require("../controllers/swapController");
 router.post("/registration", validatorRegister, userController.registration);
 
 router.get("/bookshelf", isAuth, userController.getAllBooks);
-router.get("/bookspost", isAuth, userController.getAllPost);
-router.get("/bookspost/:exchangeId", isAuth, userController.getByIdBookTrade);
+router.get("/bookpost", isAuth, userController.getAllPost);
+router.get("/booktrade", isAuth, userController.getAllTrade);
+router.get("/bookpost/:postId", isAuth, userController.getPostById);
+router.get("/booktrade/:exchangeId", isAuth, userController.getByIdBookTrade);
 router.get("/bookshelf/:bookId", isAuth, userController.getById);
 router.post("/bookshelf/:bookId", isAuth, swapController.post);
 module.exports = router;

@@ -38,6 +38,7 @@ exports.registration = async (req, res, next) => {
   }
 };
 
+//// page bookshelf
 exports.getAllBooks = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -68,7 +69,6 @@ exports.getAllBooks = async (req, res, next) => {
     next(error);
   }
 };
-
 exports.getById = async (req, res, next) => {
   try {
     const userId = req.userId;
@@ -106,24 +106,107 @@ exports.getById = async (req, res, next) => {
   }
 };
 
+//// page Post
+
 exports.getAllPost = async (req, res, next) => {
   try {
     const userId = req.userId;
-    let bookshelf = [];
+    let bookPost = [];
     let bookImages = [];
-    const snapshop = await userModel.getBookPostAll(userId);
+    const snapshop = await tradeModel.getOwnPostAll(userId);
     snapshop.forEach((doc) => {
       let data = doc.data();
-      bookshelf.push({ ...data });
+      bookPost.push({ ...data });
     });
+    console.log(bookPost);
     let bookDetail = [];
-    for (let i = 0; i < bookshelf.length; i++) {
-      let book = await bookModel.getBookById(bookshelf[i].bookId);
+    for (let i = 0; i < bookPost.length; i++) {
+      let book = await bookModel.getBookById(bookPost[i].owner_bookId);
       let bookImage = await minioService.getCoverBook(book.bookImage);
       bookImages.push(bookImage);
       bookDetail.push(book);
     }
-    for (let i = 0; i < bookshelf.length; i++) {
+    for (let i = 0; i < bookPost.length; i++) {
+      const buffer = bookDetail[i];
+      buffer.bookImage = bookImages[i];
+    }
+    res.status(200).json({ status: 200, bookDetail });
+  } catch (error) {
+    console.log(error);
+    if (!error.statusCode) {
+      error.statusCode = 404;
+    }
+    next(error);
+  }
+};
+exports.getPostById = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const postId = req.params.postId;
+    const postDetail = await tradeModel.getById(postId);
+    if (postDetail == undefined) {
+      return res.status(404).json({ status: 404, msg: "Don't have any post" });
+    }
+    const ownerData = await userModel.getById(postDetail.owner_userId);
+    let ownerDetails = {
+      name: ownerData.displayName,
+      email: ownerData.email,
+    };
+    const book = await bookModel.getBookById(postDetail.owner_bookId);
+    const coverBook = await minioService.getCoverBook(book.bookImage);
+    book.bookImage = coverBook;
+    let offerDetails = [];
+    const offers = Object.keys(postDetail.offers);
+    if (offers.length > 0) {
+      for (const [key, value] of Object.entries(postDetail.offers)) {
+        const book = await bookModel.getBookById(value.offer_bookId);
+        const offer = { offerId: key, name: value.displayName, book: book };
+        offerDetails.push(offer);
+      }
+      return res.status(200).json({
+        status: 200,
+        ownerDetails: ownerDetails,
+        postDetail: postDetail.timeSet + "  " + "Day",
+        BookDetails: book,
+        offerDetails: offerDetails,
+      });
+    } else {
+      return res.status(200).json({
+        status: 200,
+        ownerDetails: ownerDetails,
+        postDetail: postDetail.timeSet + "day",
+        BookDetails: book,
+        offerDetails: "Don't have any offers",
+      });
+    }
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 404;
+    }
+    next(error);
+  }
+};
+
+//// page Trade
+
+exports.getAllTrade = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    let bookTrade = [];
+    let bookImages = [];
+    const snapshop = await tradeModel.getBookTradeAll(userId);
+    snapshop.forEach((doc) => {
+      let data = doc.data();
+      bookTrade.push({ ...data });
+    });
+    let bookDetail = [];
+    for (let i = 0; i < bookTrade.length; i++) {
+      let book = await bookModel.getBookById(bookTrade[i].bookId);
+      let bookImage = await minioService.getCoverBook(book.bookImage);
+      bookImages.push(bookImage);
+      bookDetail.push(book);
+    }
+    for (let i = 0; i < bookTrade.length; i++) {
       const buffer = bookDetail[i];
       buffer.bookImage = bookImages[i];
     }
@@ -142,6 +225,9 @@ exports.getByIdBookTrade = async (req, res, next) => {
     const userId = req.userId;
     const exchangeId = req.params.exchangeId;
     const bookTrade = await tradeModel.getBookTradeById(exchangeId);
+    if (bookTrade == undefined) {
+      return res.status(404).json({ status: 404, msg: "during is time out" });
+    }
     if (bookTrade.log[userId]) {
       const bookId = bookTrade.log[userId].bookId;
       const book = await bookModel.getBookById(bookId);

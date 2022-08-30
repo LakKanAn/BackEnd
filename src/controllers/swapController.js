@@ -66,21 +66,20 @@ exports.getById = async (req, res, next) => {
     const book = await bookModel.getBookById(postDetail.owner_bookId);
     const coverBook = await minioService.getCoverBook(book.bookImage);
     book.bookImage = coverBook;
-    let booksAndUserName = [];
-    const offerDetails = Object.values(postDetail.offers);
-    if (offerDetails.length > 0) {
-      for (let i = 0; i < offerDetails.length; i++) {
-        booksAndUserName.push(
-          await bookModel.getBookById(offerDetails[i].offer_bookId)
-        );
-        booksAndUserName.push(offerDetails[i].displayName);
+    let offerDetails = [];
+    const offers = Object.keys(postDetail.offers);
+    if (offers.length > 0) {
+      for (const [key, value] of Object.entries(postDetail.offers)) {
+        const book = await bookModel.getBookById(value.offer_bookId);
+        const offer = { offerId: key, name: value.displayName, book: book };
+        offerDetails.push(offer);
       }
       return res.status(200).json({
         status: 200,
         ownerDetails: ownerDetails,
-        postDetail: postDetail.timeSet + "day",
+        postDetail: postDetail.timeSet + "  " + "Day",
         BookDetails: book,
-        offerDetails: booksAndUserName,
+        offerDetails: offerDetails,
       });
     } else {
       return res.status(200).json({
@@ -250,6 +249,6 @@ exports.During = async (req, res, next) => {
   }
 };
 
-exports.notifyOffer = async (req, res, next) => {};
+// exports.notifyOffer = async (req, res, next) => {};
 
-exports.notifyConfirm = async (req, res, next) => {};
+// exports.notifyConfirm = async (req, res, next) => {};

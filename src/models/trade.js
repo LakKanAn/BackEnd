@@ -30,13 +30,13 @@ async function getById(postId) {
     null;
   }
 }
-async function getOwnPost(userId) {
+async function getOwnPostAll(userId) {
   try {
-    const offer = await db
+    const Owner = await db
       .collection(collectionOffer)
       .where("owner_userId", "==", userId)
       .get();
-    return offer;
+    return Owner;
   } catch (err) {
     console.log(err);
     null;
@@ -122,6 +122,18 @@ async function deletePost(postId) {
     null;
   }
 }
+async function getBookTradeAll(userId) {
+  try {
+    const exchange = await db
+      .collection(collectionExchange)
+      .where("owner_userId", "==", userId)
+      .get();
+    return exchange;
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
 async function getBookTradeById(exchangeId) {
   try {
     const exchange = await (
@@ -177,10 +189,11 @@ module.exports = {
   getAll,
   postBook,
   getById,
-  getOwnPost,
+  getOwnPostAll,
   postOffer,
   confirm,
   deletePost,
+  getBookTradeAll,
   getBookTradeById,
   checkDuring,
   rollback,
