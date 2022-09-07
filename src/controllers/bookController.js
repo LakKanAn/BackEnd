@@ -6,7 +6,7 @@ const minioService = require("../services/minio");
 
 exports.getAll = async (req, res, next) => {
   try {
-    const perPage = parseInt(req.query.perpage) || 40;
+    const perPage = parseInt(req.query.perpage) || 9;
     const currentPage = req.query.page - 1 || 0;
     let books = [];
     let bookImages = [];

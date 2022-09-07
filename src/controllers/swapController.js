@@ -23,12 +23,14 @@ exports.getAll = async (req, res, next) => {
     let totalPage = Math.ceil(countDoc / perPage);
     let bookDetail = [];
     for (let i = 0; i < books.length; i++) {
+      let ownerName = books[i].owner_userName;
       let postId = books[i].postId;
       let during = books[i].timeSet;
       let book = await bookModel.getBookById(books[i].owner_bookId);
       let bookImage = await minioService.getCoverBook(book.bookImage);
       bookImages.push(bookImage);
       book.postId = postId;
+      book.ownerName = ownerName;
       book.during = during;
       bookDetail.push(book);
     }
@@ -106,6 +108,7 @@ exports.post = async (req, res, next) => {
     const bookId = req.params.bookId;
     const timeSet = parseInt(req.body.timeSet);
     const checkBook = await userModel.getBookById(userId, bookId);
+    const userData = await userModel.getById(userId);
     if (checkBook.post == true) {
       return res
         .status(404)
@@ -115,6 +118,7 @@ exports.post = async (req, res, next) => {
     data.timeSet = timeSet;
     data.owner_bookId = bookId;
     data.owner_userId = userId;
+    data.owner_userName = userData.displayName;
     data.offers = {};
     await tradeModel.postBook(userId, bookId, data);
     return res.status(200).json({ msg: "this book is now post to exchange!" });

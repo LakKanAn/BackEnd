@@ -43,18 +43,6 @@ async function getBookById(bookId) {
   }
 }
 
-async function getByCategory(category) {
-  try {
-    const book = await db
-      .collection(collectionName)
-      .where("category", "==", category)
-      .get();
-    return book;
-  } catch (err) {
-    console.log(err);
-    null;
-  }
-}
 async function getByGenre(genre, perPage, currentPage) {
   try {
     const book = await db
