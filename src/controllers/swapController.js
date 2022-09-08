@@ -81,7 +81,7 @@ exports.getById = async (req, res, next) => {
       return res.status(200).json({
         status: 200,
         ownerDetails: ownerDetails,
-        postDetail: postDetail.timeSet + "  " + "Day",
+        postDetail: postDetail.timeSet,
         BookDetails: book,
         offerDetails: offerDetails,
       });
@@ -89,7 +89,7 @@ exports.getById = async (req, res, next) => {
       return res.status(200).json({
         status: 200,
         ownerDetails: ownerDetails,
-        postDetail: postDetail.timeSet + "Day",
+        postDetail: postDetail.timeSet,
         BookDetails: book,
         offerDetails: "Don't have any offers",
       });
@@ -153,12 +153,10 @@ exports.cancel = async (req, res, next) => {
     }
 
     await tradeModel.cancelPostBook(userId, postDetail.owner_bookId, postId);
-    return res
-      .status(200)
-      .json({
-        status: 200,
-        msg: "This book is canceled the posted to exchange!",
-      });
+    return res.status(200).json({
+      status: 200,
+      msg: "This book is canceled the posted to exchange!",
+    });
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 404;
