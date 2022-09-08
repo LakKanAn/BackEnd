@@ -89,7 +89,7 @@ exports.getById = async (req, res, next) => {
       return res.status(200).json({
         status: 200,
         ownerDetails: ownerDetails,
-        postDetail: postDetail.timeSet + "day",
+        postDetail: postDetail.timeSet + "Day",
         BookDetails: book,
         offerDetails: "Don't have any offers",
       });
@@ -112,7 +112,7 @@ exports.post = async (req, res, next) => {
     if (checkBook.post == true) {
       return res
         .status(404)
-        .json({ msg: "this book has already post to exchange" });
+        .json({ status: 404, msg: "This book has already post to exchange" });
     }
     let data = {};
     data.timeSet = timeSet;
@@ -121,7 +121,44 @@ exports.post = async (req, res, next) => {
     data.owner_userName = userData.displayName;
     data.offers = {};
     await tradeModel.postBook(userId, bookId, data);
-    return res.status(200).json({ msg: "this book is now post to exchange!" });
+    return res
+      .status(200)
+      .json({ status: 200, msg: "This book is now posted to exchange!" });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 404;
+    }
+    next(error);
+  }
+};
+
+exports.cancel = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const postId = req.params.postId;
+    const postDetail = await tradeModel.getById(postId);
+    if (postDetail == undefined) {
+      return res
+        .status(404)
+        .json({ status: 404, msg: "This post is not available " });
+    }
+    const checkBook = await userModel.getBookById(
+      userId,
+      postDetail.owner_bookId
+    );
+    if (checkBook.post == false) {
+      return res
+        .status(404)
+        .json({ status: 404, msg: "This book is not posted for exchange." });
+    }
+
+    await tradeModel.cancelPostBook(userId, postDetail.owner_bookId, postId);
+    return res
+      .status(200)
+      .json({
+        status: 200,
+        msg: "This book is canceled the posted to exchange!",
+      });
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 404;
@@ -139,17 +176,19 @@ exports.Offer = async (req, res, next) => {
     const checkOwner = await userModel.getBookById(userId, bookId);
     const postDetail = await tradeModel.getById(postId);
     if (checkOwner == undefined) {
-      return res.status(404).json({ status: 404, msg: "permission denied" });
+      return res.status(404).json({ status: 404, msg: "Permission Denied" });
     } else if (checkOwner.exchange == true) {
       return res
         .status(406)
-        .json({ status: 406, msg: "this book already exchange" });
+        .json({ status: 406, msg: "This book already exchange" });
     }
     if (postDetail == undefined) {
       return res.status(404).json({ status: 404, msg: "Don't have any post" });
     }
     if (postDetail.owner_userId == userId) {
-      return res.status(200).json({ msg: "you can't not exchange your book" });
+      return res
+        .status(200)
+        .json({ status: 200, msg: "You can't not exchange your book" });
     }
     let offerData = {};
     for (const [key, value] of Object.entries(postDetail.offers)) {
@@ -159,7 +198,7 @@ exports.Offer = async (req, res, next) => {
     if (offerData.BookId == bookId && offerData.userId == userId) {
       return res.status(200).json({
         status: 200,
-        msg: "you already offer this book for this post",
+        msg: "You already offer this book for this post",
       });
     } else {
       const offerData = await userModel.getById(userId);
@@ -175,7 +214,7 @@ exports.Offer = async (req, res, next) => {
       await tradeModel.postOffer(postId, data);
       return res
         .status(200)
-        .json({ status: 200, msg: "offer added successfully" });
+        .json({ status: 200, msg: "Offer added successfully" });
     }
   } catch (error) {
     if (!error.statusCode) {
@@ -194,9 +233,9 @@ exports.confirm = async (req, res, next) => {
     if (postDetails === undefined) {
       return res
         .status(404)
-        .json({ status: 404, msg: "this post is already confirm" });
+        .json({ status: 404, msg: "This post is already confirm" });
     }
-    const during = dayjs().add(postDetails.timeSet, "day").toDate();
+    const during = dayjs().add(postDetails.timeSet, "Day").toDate();
     let offerData = {
       exchangeId: postId,
       during: during,

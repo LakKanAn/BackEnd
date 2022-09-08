@@ -17,5 +17,6 @@ router.get("/booktrade", isAuth, userController.getAllTrade);
 router.get("/bookpost/:postId", isAuth, userController.getPostById);
 router.get("/booktrade/:exchangeId", isAuth, userController.getByIdBookTrade);
 router.get("/bookshelf/:bookId", isAuth, userController.getById);
-router.post("/bookshelf/:bookId", isAuth, swapController.post);
+router.post("/bookshelf/:bookId/post", isAuth, swapController.post);
+router.post("/bookshelf/:postId/cancel", isAuth, swapController.cancel);
 module.exports = router;

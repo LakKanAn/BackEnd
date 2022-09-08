@@ -21,10 +21,10 @@ async function getAll(perPage, currentPage) {
 }
 async function getById(postId) {
   try {
-    const offer = await (
+    const post = await (
       await db.collection(collectionOffer).doc(postId).get()
     ).data();
-    return offer;
+    return post;
   } catch (err) {
     console.log(err);
     null;
@@ -55,10 +55,6 @@ async function postBook(userId, bookId, data) {
     const newPost = await db.collection(collectionOffer).doc();
     data.postId = newPost.id;
     newPost.create(data);
-    await db
-      .collection("stats")
-      .doc("trade")
-      .set({ totalPosts: increment }, { merge: true });
 
     return newPost;
   } catch (err) {
@@ -77,6 +73,22 @@ async function postOffer(postId, data) {
     null;
   }
 }
+async function cancelPostBook(userId, bookId, postId) {
+  try {
+    await db
+      .collection(collectionUsers)
+      .doc(userId)
+      .collection(collectionBookshelf)
+      .doc(bookId)
+      .set({ post: false }, { merge: true });
+    const Post = await db.collection(collectionOffer).doc(postId).delete();
+    return Post;
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
+
 async function confirm(
   postId,
   exhangeData,
@@ -195,6 +207,7 @@ module.exports = {
   getOwnPostAll,
   postOffer,
   confirm,
+  cancelPostBook,
   deletePost,
   getBookTradeAll,
   getBookTradeById,
