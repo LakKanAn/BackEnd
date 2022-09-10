@@ -1,6 +1,4 @@
-const { admin, firestore } = require("../../db/db");
 const bookModel = require("../models/books");
-const statsModel = require("../models/stats");
 const { validationResult } = require("express-validator");
 const minioService = require("../services/minio");
 
