@@ -140,10 +140,11 @@ exports.getAllPost = async (req, res, next) => {
     let totalPage = Math.ceil(countDoc / perPage);
     let bookDetail = [];
     for (let i = 0; i < bookPost.length; i++) {
-      let book = await bookModel.getBookById(bookPost[i].owner_bookId);
-      let bookImage = await minioService.getCoverBook(book.bookImage);
+      let books = await bookModel.getBookById(bookPost[i].owner_bookId);
+      let bookImage = await minioService.getCoverBook(books.bookImage);
+      books.postId = bookPost[i].postId;
       bookImages.push(bookImage);
-      bookDetail.push(book);
+      bookDetail.push(books);
     }
     for (let i = 0; i < bookPost.length; i++) {
       const buffer = bookDetail[i];

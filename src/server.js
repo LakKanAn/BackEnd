@@ -48,3 +48,26 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`server running on port ${port}`);
 });
+
+// set 404 page
+app.use("*", (req, res, next) => {
+  res.status(404).json({
+    error: {
+      code: 404,
+      message: `Method ${req.method} ${req._parsedUrl.path} is not founded`,
+      data: `Method ${req.method} ${req._parsedUrl.path} is not founded`,
+    },
+  });
+});
+
+// handle error
+app.use((error, req, res, next) => {
+  res.status(error.statusCode).json({
+    error: {
+      code: error.statusCode,
+      message: error.message,
+      data: error.data,
+    },
+  });
+});
+module.exports = app;
