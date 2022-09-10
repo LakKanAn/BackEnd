@@ -107,7 +107,6 @@ jobs:
             export COMPOSE_IGNORE_ORPHANS=True
             docker-compose -f ~/docker-compose/${{ env.ENV_NAME }}/${{ env.ENV_NAME }}-app-compose.yml down
             docker-compose -f ~/docker-compose/${{ env.ENV_NAME }}/${{ env.ENV_NAME }}-app-compose.yml up -d
-            docker rmi $(docker images | grep "<none>" | awk '{print $3}')
 
   acceptance-testing:
     needs: deploy
