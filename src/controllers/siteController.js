@@ -1,6 +1,7 @@
 const { db, admin } = require("../../db/db");
 const jwt = require("jsonwebtoken");
-
+const userModel = require("../models/users");
+const distributorModel = require("../models/distributor");
 const SECRET = process.env.SITE_TOKEN;
 
 exports.access_token = async (req, res, next) => {
@@ -15,7 +16,7 @@ exports.access_token = async (req, res, next) => {
       delete user.sub;
       delete user.aud;
       const access_token = jwt.sign({ user: user, uid: user.uid }, SECRET);
-      res.status(200).json({ status: 200, access_token: access_token });
+      res.status(201).json({ status: 201, access_token: access_token });
     } catch (err) {
       res
         .status(401)
@@ -32,12 +33,26 @@ exports.me = async (req, res, next) => {
     try {
       const tmpUser = jwt.verify(access_token, SECRET);
       const user = await admin.auth().getUser(tmpUser.uid);
-      const userData = {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-      };
-      res.status(200).json({ status: 200, user: userData });
+      const generalUser = await userModel.getById(user.uid);
+      const distributor = await distributorModel.getById(user.uid);
+      if (generalUser) {
+        const userData = {
+          uid: user.uid,
+          email: user.email,
+          role: generalUser.role,
+          displayName: user.displayName,
+        };
+        return res.status(200).json({ status: 200, user: userData });
+      }
+      if (distributor) {
+        const distributorData = {
+          uid: user.uid,
+          email: user.email,
+          role: distributor.role,
+          displayName: distributor.displayName,
+        };
+        return res.status(200).json({ status: 200, user: distributorData });
+      }
     } catch (err) {
       res
         .status(401)

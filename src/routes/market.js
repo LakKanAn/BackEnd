@@ -3,8 +3,9 @@ var router = express.Router();
 const isAuth = require("../middlewares/auth");
 const bookController = require("../controllers/bookController");
 
-router.get("/books", bookController.getAll);
-router.get("/books/:bookId", bookController.getById);
-router.post("/books/:bookId", isAuth, bookController.payment);
+router.get("/", bookController.getAll);
+router.get("/filter", bookController.getByCategoryAndGenre);
+router.get("/search", bookController.search);
+router.get("/:bookId", bookController.getById);
 
 module.exports = router;
