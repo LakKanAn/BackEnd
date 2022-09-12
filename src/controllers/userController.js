@@ -234,10 +234,13 @@ exports.getAllTrade = async (req, res, next) => {
     let bookDetail = [];
     for (let i = 0; i < bookTrade.length; i++) {
       let log = bookTrade[i].log[userId];
-      let book = await bookModel.getBookById(log.bookId);
-      let bookImage = await minioService.getCoverBook(book.bookImage);
-      bookImages.push(bookImage);
-      bookDetail.push(book);
+      if (log == userId) {
+        let book = await bookModel.getBookById(log.bookId);
+        let bookImage = await minioService.getCoverBook(book.bookImage);
+        bookImages.push(bookImage);
+        bookDetail.push(book);
+      }
+      return res.status(200).json({ status: 200, msg: "Don't have any book" });
     }
 
     for (let i = 0; i < bookTrade.length; i++) {
@@ -246,7 +249,7 @@ exports.getAllTrade = async (req, res, next) => {
       buffer.bookImage = bookImages[i];
       buffer.exchangeId = exchangeId;
     }
-    res.status(200).json({
+    return res.status(200).json({
       status: 200,
       bookDetail,
       config: {
