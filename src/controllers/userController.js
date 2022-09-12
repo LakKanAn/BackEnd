@@ -232,22 +232,22 @@ exports.getAllTrade = async (req, res, next) => {
     const countDoc = snapshot.size;
     let totalPage = Math.ceil(countDoc / perPage);
     let bookDetail = [];
+
     for (let i = 0; i < bookTrade.length; i++) {
-      let log = bookTrade[i].log[userId];
-      if (log == userId) {
-        let book = await bookModel.getBookById(log.bookId);
+      let data = null;
+      if (Object.keys(bookTrade[i].log).includes(userId)) {
+        data = bookTrade[i].log[userId].bookId;
+        let book = await bookModel.getBookById(data);
+        book.exchangeId = bookTrade[i].exchangeId;
         let bookImage = await minioService.getCoverBook(book.bookImage);
         bookImages.push(bookImage);
         bookDetail.push(book);
       }
-      return res.status(200).json({ status: 200, msg: "Don't have any book" });
     }
 
-    for (let i = 0; i < bookTrade.length; i++) {
-      const exchangeId = bookTrade[i].exchangeId;
+    for (let i = 0; i < bookDetail.length; i++) {
       const buffer = bookDetail[i];
       buffer.bookImage = bookImages[i];
-      buffer.exchangeId = exchangeId;
     }
     return res.status(200).json({
       status: 200,
