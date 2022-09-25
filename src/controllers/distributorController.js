@@ -10,16 +10,20 @@ exports.registration = async (req, res, next) => {
     return res.status(400).json({ status: 400, error: errors.array() });
   }
   try {
-    const distributorId = req.body.distributorId;
     const email = req.body.email;
+    const distributorId = req.body.distributorId;
     const checkUser = await distributorModel.checkDistributor(email);
     if (checkUser.empty) {
       const joinAt = firestore.FieldValue.serverTimestamp();
       const data = {};
       data.email = email;
       data.role = "distributor";
-      await userModel.registration(userId, data);
-      res.status(404).json({ status: 404, hasUser: false });
+      data.joinAt = joinAt;
+      const newDistributor = await distributorModel.registration(
+        distributorId,
+        data
+      );
+      res.status(201).json({ status: 201, hasUser: false, newDistributor });
     } else {
       const getDistributor = await distributorModel.getById(distributorId);
       res.status(201).json({ status: 201, hasUser: true, getDistributor });

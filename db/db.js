@@ -2,7 +2,6 @@
 const firebase = require("firebase-admin");
 
 if (process.env.NODE_ENV == "production") {
-  // const serviceAccount = require("./coding-thailand-firebase-adminsdk-v11uy-5390990188.json");
   firebase.initializeApp({
     credential: firebase.credential.applicationDefault(),
     // credential: firebase.credential.cert(serviceAccount),

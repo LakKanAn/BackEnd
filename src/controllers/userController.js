@@ -220,6 +220,7 @@ exports.getPostById = async (req, res, next) => {
 exports.getAllTrade = async (req, res, next) => {
   try {
     const userId = req.userId;
+
     const perPage = parseInt(req.query.perpage) || 9;
     const currentPage = req.query.page - 1 || 0;
     let bookTrade = [];
