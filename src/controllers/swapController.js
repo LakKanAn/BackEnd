@@ -1,9 +1,11 @@
 const userModel = require("../models/users");
 const bookModel = require("../models/books");
 const tradeModel = require("../models/trade");
+const transactionModel = require("../models/transactions");
 const minioService = require("../services/minio");
 const dayjs = require("dayjs");
 const { nanoid } = require("nanoid");
+const { firestore } = require("../../db/db");
 
 exports.getAll = async (req, res, next) => {
   try {
@@ -257,6 +259,17 @@ exports.confirm = async (req, res, next) => {
       ownerBookId,
       offerBookId
     );
+    let data = {};
+    data.postId = postId;
+    data.offerData = offerData;
+    data.ownerUserId = ownerUserId;
+    data.offerUserId = offerUserId;
+    data.ownerBookId = ownerBookId;
+    data.offerBookId = offerBookId;
+    data.date = firestore.FieldValue.serverTimestamp();
+    data.type = "exchanging";
+    data.status = "successful";
+    await transactionModel.create(data);
     await tradeModel.deletePost(postId);
 
     return res.status(200).json({ status: 200, offerData });

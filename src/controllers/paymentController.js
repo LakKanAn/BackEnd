@@ -1,6 +1,6 @@
 const KEY = process.env.STRIPE_KEY;
 const stripe = require("stripe")(KEY);
-const { admin, firestore } = require("../../db/db");
+const { firestore } = require("../../db/db");
 const userModel = require("../models/users");
 const bookModel = require("../models/books");
 const transactionModel = require("../models/transactions");
