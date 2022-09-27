@@ -8,4 +8,5 @@ router.get("/transactions", isAuth, adminController.getTransactionAll);
 router.get("/transactions/type", isAuth, adminController.getTransactionByType);
 router.get("/totalUser", isAuth, adminController.getTotalUser);
 router.get("/totalBook", isAuth, adminController.getTotalBook);
+router.get("/totalDistributor", isAuth, adminController.getTotalDistributor);
 module.exports = router;

@@ -164,14 +164,38 @@ exports.getTotalBook = async (req, res, next) => {
     let data = [];
     for (let i = 0; i < lists.length; i++) {
       data.push(lists[i].release);
-      // release.push(data);
     }
-
     res.status(200).json({
       status: 200,
       totalBook: countDoc,
       totalBookRelease: data.filter((obj) => obj == true).length,
       totalBookNotRelease: data.filter((obj) => obj == false).length,
+    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 404;
+    }
+    next(error);
+  }
+};
+
+exports.getTotalDistributor = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    if (userId != adminUid) {
+      return res.status(403).json({ status: 403, msg: "not a permission" });
+    }
+    let lists = [];
+    const snapshot = await distributorModel.getAll();
+    snapshot.forEach((doc) => {
+      let data = doc.data();
+      lists.push({ ...data, id: doc.id });
+    });
+    const countDoc = snapshot.size;
+
+    res.status(200).json({
+      status: 200,
+      totalDistributor: countDoc,
     });
   } catch (error) {
     if (!error.statusCode) {
