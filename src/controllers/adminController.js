@@ -48,7 +48,7 @@ exports.addDistributor = async (req, res, next) => {
   }
 };
 
-exports.getAll = async (req, res, next) => {
+exports.getTransactionAll = async (req, res, next) => {
   try {
     const userId = req.userId;
     if (userId != adminUid) {
@@ -58,6 +58,45 @@ exports.getAll = async (req, res, next) => {
     const currentPage = req.query.page - 1 || 0;
     let lists = [];
     const snapshot = await transactionModel.getAll(perPage, currentPage);
+    snapshot.forEach((doc) => {
+      let data = doc.data();
+      lists.push({ ...data, id: doc.id });
+    });
+    const countDoc = snapshot.size;
+    let totalPage = Math.ceil(countDoc / perPage);
+
+    res.status(200).json({
+      status: 200,
+      transactions: lists,
+      config: {
+        currentPage: currentPage + 1,
+        perPage: parseInt(req.query.perpage) || perPage,
+        totalPage: totalPage,
+      },
+    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 404;
+    }
+    next(error);
+  }
+};
+
+exports.getTransactionByType = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    if (userId != adminUid) {
+      return res.status(403).json({ status: 403, msg: "not a permission" });
+    }
+    const type = req.query.type;
+    const perPage = parseInt(req.query.perpage) || 9;
+    const currentPage = req.query.page - 1 || 0;
+    let lists = [];
+    const snapshot = await transactionModel.getByType(
+      type,
+      perPage,
+      currentPage
+    );
     snapshot.forEach((doc) => {
       let data = doc.data();
       lists.push({ ...data, id: doc.id });
