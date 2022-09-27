@@ -16,6 +16,16 @@ async function getBookAllByDistributor(distributorId) {
   }
 }
 
+async function getBookAllByAdmin() {
+  try {
+    const totals = await db.collection(collectionName).get();
+    return totals;
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
+
 async function getBookAll(perPage, currentPage) {
   try {
     const books = await db
@@ -141,6 +151,8 @@ async function deleteBook(distributorId, bookId) {
 }
 
 module.exports = {
+  /// for admin
+  getBookAllByAdmin,
   ///for distributor
   getBookAllByDistributor,
   createBook,
