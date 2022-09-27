@@ -61,13 +61,13 @@ exports.getById = async (req, res, next) => {
     const bookId = req.params.bookId;
     const book = await bookModel.getBookById(bookId);
     if (!book) {
-      res.status(404).json({ status: 404, msg: "Don't have any book" });
+      return res.status(404).json({ status: 404, msg: "Don't have any book" });
     } else if (book.release === false) {
-      res.status(404).json({ status: 404, msg: "Don't have any book" });
+      return res.status(404).json({ status: 404, msg: "Don't have any book" });
     } else {
       const coverBook = await minioService.getCoverBook(book.bookImage);
       book.bookImage = coverBook;
-      res.status(200).json({
+      return res.status(200).json({
         status: 200,
         BookDetails: book,
       });

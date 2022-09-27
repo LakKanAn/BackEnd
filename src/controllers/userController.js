@@ -1,6 +1,7 @@
 const { firestore } = require("../../db/db");
 const userModel = require("../models/users");
 const bookModel = require("../models/books");
+const reportModel = require("../models/reports");
 const tradeModel = require("../models/trade");
 const { validationResult } = require("express-validator");
 const minioService = require("../services/minio");
@@ -291,6 +292,36 @@ exports.getByIdBookTrade = async (req, res, next) => {
     } else {
       return res.status(404).json({ msg: "permission denied" });
     }
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 404;
+    }
+    next(error);
+  }
+};
+
+exports.createReport = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const { topic, details } = req.body;
+    if (!(topic, details)) {
+      return res
+        .status(400)
+        .json({ status: 400, msg: "Please enter information!" });
+    }
+    const userData = await userModel.getById(userId);
+    data = {};
+    data.userId = userId;
+    data.email = userData.email;
+    data.displayName = userData.displayName;
+    data.topic = topic;
+    data.details = details;
+    data.sentAt = firestore.FieldValue.serverTimestamp();
+    await reportModel.createReport(data);
+    res.status(200).json({
+      status: 200,
+      newReport: data,
+    });
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 404;

@@ -1,7 +1,5 @@
 const { db } = require("../../db/db");
-const firebase = require("../../db/db");
 const collectionName = "books";
-const increment = firebase.admin.firestore.FieldValue.increment(1);
 
 async function getBookAllByDistributor(distributorId) {
   try {
