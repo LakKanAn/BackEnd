@@ -269,9 +269,20 @@ exports.confirm = async (req, res, next) => {
     data.date = firestore.FieldValue.serverTimestamp();
     data.type = "exchanging";
     data.status = "successful";
+    const getCheckPostOfoffer = await tradeModel.getOfferPost(
+      offerUserId,
+      offerBookId
+    );
+    if (getCheckPostOfoffer.size > 0) {
+      const post = [];
+      getCheckPostOfoffer.forEach((doc) => {
+        let data = doc.data();
+        post.push({ ...data });
+      });
+      await tradeModel.deletePost(post[0].postId);
+    }
     await transactionModel.create(data);
     await tradeModel.deletePost(postId);
-
     return res.status(200).json({ status: 200, offerData });
   } catch (error) {
     if (!error.statusCode) {
@@ -312,7 +323,3 @@ exports.During = async (req, res, next) => {
     next(error);
   }
 };
-
-// exports.notifyOffer = async (req, res, next) => {};
-
-// exports.notifyConfirm = async (req, res, next) => {};
