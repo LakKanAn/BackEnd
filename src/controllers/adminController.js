@@ -15,10 +15,14 @@ exports.addDistributor = async (req, res, next) => {
     }
     const email = req.body.email;
     const password = req.body.password;
-    if (!(email && password)) {
-      return res
-        .status(400)
-        .json({ status: 400, msg: "Please enter a email and password" });
+    const displayName = req.body.displayName;
+    const company = req.body.company;
+    const address = req.body.address;
+    if (!(email && password && company && address && displayName)) {
+      return res.status(400).json({
+        status: 400,
+        msg: "Please fill out the information completely.",
+      });
     }
     const checkEmail = validator.validate(email);
     switch (checkEmail) {
@@ -26,12 +30,21 @@ exports.addDistributor = async (req, res, next) => {
         await admin
           .auth()
           .createUser({ email, password })
-          .then(() => {
-            return res.status(200).json({
-              status: 200,
-              msg: "Created successfully",
-              distributor: { email, password },
-            });
+          .then(async () => {
+            const getUid = await admin.auth().getUserByEmail(email);
+            const joinAt = firestore.FieldValue.serverTimestamp();
+            const data = {};
+            data.displayName = displayName;
+            data.email = email;
+            data.address = address;
+            data.company = company;
+            data.role = "distributor";
+            data.joinAt = joinAt;
+            const newDistributor = await distributorModel.registration(
+              getUid.uid,
+              data
+            );
+            return res.status(201).json({ status: 201, newDistributor });
           })
           .catch((error) => {
             return res.status(400).json({ status: 400, msg: error.message });

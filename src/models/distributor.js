@@ -6,7 +6,6 @@ async function getAll() {
     const totals = await db.collection(collectionName).get();
     return totals;
   } catch (err) {
-    console.log(err);
     return null;
   }
 }
@@ -27,7 +26,6 @@ async function checkDistributor(email) {
       .get();
     return user;
   } catch (err) {
-    console.log(err);
     return null;
   }
 }

@@ -14,19 +14,12 @@ exports.registration = async (req, res, next) => {
     const distributorId = req.body.distributorId;
     const checkUser = await distributorModel.checkDistributor(email);
     if (checkUser.empty) {
-      const joinAt = firestore.FieldValue.serverTimestamp();
-      const data = {};
-      data.email = email;
-      data.role = "distributor";
-      data.joinAt = joinAt;
-      const newDistributor = await distributorModel.registration(
-        distributorId,
-        data
-      );
-      res.status(201).json({ status: 201, hasUser: false, newDistributor });
+      return res.status(404).json({ status: 404, hasUser: false });
     } else {
       const getDistributor = await distributorModel.getById(distributorId);
-      res.status(201).json({ status: 201, hasUser: true, getDistributor });
+      return res
+        .status(201)
+        .json({ status: 201, hasUser: true, getDistributor });
     }
   } catch (error) {
     if (!error.statusCode) {
