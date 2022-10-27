@@ -15,6 +15,7 @@ router.post(
   validatorRegister,
   distributorController.registration
 );
+router.get("/info", isAuth, distributorController.getInfo);
 
 ////book manage
 router.get("/books", isAuth, distributorController.getAll);

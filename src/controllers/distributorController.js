@@ -29,6 +29,29 @@ exports.registration = async (req, res, next) => {
   }
 };
 
+exports.getInfo = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ status: 400, error: errors.array() });
+  }
+  try {
+    const distributorId = req.userId;
+    const distributorData = await distributorModel.getById(distributorId);
+    if (distributorData == undefined) {
+      return res.status(403).json({ status: 403, msg: "not a permission" });
+    }
+    return res.status(200).json({
+      status: 200,
+      distributor: distributorData,
+    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 404;
+    }
+    next(error);
+  }
+};
+
 exports.getAll = async (req, res, next) => {
   try {
     const distributorId = req.userId;
