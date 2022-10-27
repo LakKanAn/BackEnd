@@ -71,6 +71,8 @@ exports.getById = async (req, res, next) => {
     if (offers.length > 0) {
       for (const [key, value] of Object.entries(postDetail.offers)) {
         const book = await bookModel.getBookById(value.offer_bookId);
+        const coverBook = await minioService.getCoverBook(book.bookImage);
+        book.bookImage = coverBook;
         const offer = { offerId: key, name: value.displayName, book: book };
         offerDetails.push(offer);
       }

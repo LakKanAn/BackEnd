@@ -25,14 +25,6 @@ router.post(
   [isAuth, uploadBook.fields([{ name: "image" }, { name: "content" }])],
   distributorController.addFile
 );
-// router.post(
-//   "/books_pdf/:bookId",
-//   [
-//     isAuth,
-//     // uploadBooKContent.single("test_kub"),
-//   ],
-//   distributorController.addContent
-// );
 router.get(
   "/books/:bookId",
   [isAuth, validatorFindOne],
