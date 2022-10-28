@@ -2,7 +2,15 @@ const { db } = require("../../db/db");
 const collectionName = "users";
 const subCollectionName = "bookshelf";
 
-async function getAll() {}
+async function getAll() {
+  try {
+    const totals = await db.collection(collectionName).get();
+    return totals;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+}
 
 async function getById(userId) {
   try {

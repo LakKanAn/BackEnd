@@ -15,6 +15,7 @@ router.post(
   validatorRegister,
   distributorController.registration
 );
+router.get("/info", isAuth, distributorController.getInfo);
 
 ////book manage
 router.get("/books", isAuth, distributorController.getAll);
@@ -24,14 +25,6 @@ router.post(
   [isAuth, uploadBook.fields([{ name: "image" }, { name: "content" }])],
   distributorController.addFile
 );
-// router.post(
-//   "/books_pdf/:bookId",
-//   [
-//     isAuth,
-//     // uploadBooKContent.single("test_kub"),
-//   ],
-//   distributorController.addContent
-// );
 router.get(
   "/books/:bookId",
   [isAuth, validatorFindOne],

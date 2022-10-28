@@ -1,7 +1,5 @@
 const { db } = require("../../db/db");
-const firebase = require("../../db/db");
 const collectionName = "books";
-const increment = firebase.admin.firestore.FieldValue.increment(1);
 
 async function getBookAllByDistributor(distributorId) {
   try {
@@ -10,6 +8,16 @@ async function getBookAllByDistributor(distributorId) {
       .where("distributorId", "==", distributorId)
       .get();
     return books;
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
+
+async function getBookAllByAdmin() {
+  try {
+    const totals = await db.collection(collectionName).get();
+    return totals;
   } catch (err) {
     console.log(err);
     null;
@@ -108,11 +116,6 @@ async function createBook(data) {
     const newBook = await db.collection(collectionName).doc();
     data.bookId = newBook.id;
     newBook.create(data);
-    await db
-      .collection("stats")
-      .doc(collectionName)
-      .set({ totalBooks: increment }, { merge: true });
-
     return newBook;
   } catch (err) {
     console.log(err);
@@ -139,11 +142,6 @@ async function deleteBook(distributorId, bookId) {
     const stats = await (
       await db.collection("stats").doc(collectionName).get()
     ).data();
-    const decrement = stats.totalBooks - 1;
-    await db
-      .collection("stats")
-      .doc(collectionName)
-      .set({ totalBooks: decrement }, { merge: true });
   } catch (err) {
     console.log(err);
     null;
@@ -151,6 +149,8 @@ async function deleteBook(distributorId, bookId) {
 }
 
 module.exports = {
+  /// for admin
+  getBookAllByAdmin,
   ///for distributor
   getBookAllByDistributor,
   createBook,

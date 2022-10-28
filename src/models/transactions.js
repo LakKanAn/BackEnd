@@ -12,6 +12,37 @@ async function create(data) {
   }
 }
 
+async function getAll(perPage, currentPage) {
+  try {
+    const book = await db
+      .collection(collectionName)
+      .limit(perPage)
+      .offset(currentPage * perPage)
+      .get();
+    return book;
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
+
+async function getByType(type, perPage, currentPage) {
+  try {
+    const book = await db
+      .collection(collectionName)
+      .where("type", "==", type)
+      .limit(perPage)
+      .offset(currentPage * perPage)
+      .get();
+    return book;
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
+
 module.exports = {
   create,
+  getAll,
+  getByType,
 };

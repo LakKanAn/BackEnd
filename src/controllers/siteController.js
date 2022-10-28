@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const userModel = require("../models/users");
 const distributorModel = require("../models/distributor");
 const SECRET = process.env.SITE_TOKEN;
-
+const adminUid = process.env.ADMIN_UID;
 exports.access_token = async (req, res, next) => {
   const token = req.body.token;
   if (token !== undefined) {
@@ -51,7 +51,18 @@ exports.me = async (req, res, next) => {
           role: distributor.role,
           displayName: distributor.displayName,
         };
-        return res.status(200).json({ status: 200, user: distributorData });
+        return res
+          .status(200)
+          .json({ status: 200, distributor: distributorData });
+      }
+      if (user.uid == adminUid) {
+        const adminData = {
+          uid: user.uid,
+          email: user.email,
+          role: "admin",
+          displayName: "Lakkanan_Admin",
+        };
+        return res.status(200).json({ status: 200, admin: adminData });
       }
     } catch (err) {
       res

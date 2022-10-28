@@ -124,6 +124,20 @@ async function confirm(
     null;
   }
 }
+async function getOfferPost(offerUserId, offerBookId) {
+  try {
+    const post = await db
+      .collection(collectionOffer)
+      .where("owner_userId", "==", offerUserId)
+      .where("owner_bookId", "==", offerBookId)
+      .get();
+    return post;
+  } catch (err) {
+    console.log(err);
+    null;
+  }
+}
+
 async function deletePost(postId) {
   try {
     const deletePost = await db
@@ -181,7 +195,6 @@ async function rollback(userId, bookId) {
       .collection(collectionBookshelf)
       .doc(bookId)
       .set({ post: false, exchange: false }, { merge: true });
-    // await db .collection(collectionExchange).
   } catch (err) {
     console.log(err);
     null;
@@ -207,6 +220,7 @@ module.exports = {
   getOwnPostAll,
   postOffer,
   confirm,
+  getOfferPost,
   cancelPostBook,
   deletePost,
   getBookTradeAll,

@@ -10,20 +10,40 @@ exports.registration = async (req, res, next) => {
     return res.status(400).json({ status: 400, error: errors.array() });
   }
   try {
-    const distributorId = req.body.distributorId;
     const email = req.body.email;
+    const distributorId = req.body.distributorId;
     const checkUser = await distributorModel.checkDistributor(email);
     if (checkUser.empty) {
-      const joinAt = firestore.FieldValue.serverTimestamp();
-      const data = {};
-      data.email = email;
-      data.role = "distributor";
-      await userModel.registration(userId, data);
-      res.status(404).json({ status: 404, hasUser: false });
+      return res.status(404).json({ status: 404, hasUser: false });
     } else {
       const getDistributor = await distributorModel.getById(distributorId);
-      res.status(201).json({ status: 201, hasUser: true, getDistributor });
+      return res
+        .status(201)
+        .json({ status: 201, hasUser: true, getDistributor });
     }
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 404;
+    }
+    next(error);
+  }
+};
+
+exports.getInfo = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ status: 400, error: errors.array() });
+  }
+  try {
+    const distributorId = req.userId;
+    const distributorData = await distributorModel.getById(distributorId);
+    if (distributorData == undefined) {
+      return res.status(403).json({ status: 403, msg: "not a permission" });
+    }
+    return res.status(200).json({
+      status: 200,
+      distributor: distributorData,
+    });
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 404;

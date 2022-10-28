@@ -1,6 +1,7 @@
 const { firestore } = require("../../db/db");
 const userModel = require("../models/users");
 const bookModel = require("../models/books");
+const reportModel = require("../models/reports");
 const tradeModel = require("../models/trade");
 const { validationResult } = require("express-validator");
 const minioService = require("../services/minio");
@@ -220,6 +221,7 @@ exports.getPostById = async (req, res, next) => {
 exports.getAllTrade = async (req, res, next) => {
   try {
     const userId = req.userId;
+
     const perPage = parseInt(req.query.perpage) || 9;
     const currentPage = req.query.page - 1 || 0;
     let bookTrade = [];
@@ -232,21 +234,24 @@ exports.getAllTrade = async (req, res, next) => {
     const countDoc = snapshot.size;
     let totalPage = Math.ceil(countDoc / perPage);
     let bookDetail = [];
-    for (let i = 0; i < bookTrade.length; i++) {
-      let log = bookTrade[i].log[userId];
-      let book = await bookModel.getBookById(log.bookId);
-      let bookImage = await minioService.getCoverBook(book.bookImage);
-      bookImages.push(bookImage);
-      bookDetail.push(book);
-    }
 
     for (let i = 0; i < bookTrade.length; i++) {
-      const exchangeId = bookTrade[i].exchangeId;
+      let data = null;
+      if (Object.keys(bookTrade[i].log).includes(userId)) {
+        data = bookTrade[i].log[userId].bookId;
+        let book = await bookModel.getBookById(data);
+        book.exchangeId = bookTrade[i].exchangeId;
+        let bookImage = await minioService.getCoverBook(book.bookImage);
+        bookImages.push(bookImage);
+        bookDetail.push(book);
+      }
+    }
+
+    for (let i = 0; i < bookDetail.length; i++) {
       const buffer = bookDetail[i];
       buffer.bookImage = bookImages[i];
-      buffer.exchangeId = exchangeId;
     }
-    res.status(200).json({
+    return res.status(200).json({
       status: 200,
       bookDetail,
       config: {
@@ -287,6 +292,36 @@ exports.getByIdBookTrade = async (req, res, next) => {
     } else {
       return res.status(404).json({ msg: "permission denied" });
     }
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 404;
+    }
+    next(error);
+  }
+};
+
+exports.createReport = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const { topic, details } = req.body;
+    if (!(topic, details)) {
+      return res
+        .status(400)
+        .json({ status: 400, msg: "Please enter information!" });
+    }
+    const userData = await userModel.getById(userId);
+    data = {};
+    data.userId = userId;
+    data.email = userData.email;
+    data.displayName = userData.displayName;
+    data.topic = topic;
+    data.details = details;
+    data.sentAt = firestore.FieldValue.serverTimestamp();
+    await reportModel.createReport(data);
+    res.status(200).json({
+      status: 200,
+      newReport: data,
+    });
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 404;
