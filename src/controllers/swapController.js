@@ -115,6 +115,8 @@ exports.post = async (req, res, next) => {
       return res
         .status(404)
         .json({ status: 404, msg: "This book has already exchange" });
+    } else if (timeSet <= 0) {
+      return res.status(406).json({ status: 406, msg: "time is not set" });
     }
 
     let data = {};
