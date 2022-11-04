@@ -124,7 +124,7 @@ exports.addFile = async (req, res, next) => {
     if (file.fieldname == "image") {
       data = {};
       data.bookImage = originalname;
-      await minioService.uploadFileImasge(contenType, originalname, buffer);
+      await minioService.uploadFileCover(contenType, originalname, buffer);
       const bookImage = await minioService.getCoverBook(originalname);
       await bookModel.updateBook(bookId, data);
       res.status(201).send({

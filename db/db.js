@@ -2,9 +2,9 @@
 const firebase = require("firebase-admin");
 
 if (process.env.NODE_ENV == "production") {
+  const serviceAccount = require("./lakkanan-prd-firebase.json");
   firebase.initializeApp({
-    credential: firebase.credential.applicationDefault(),
-    // credential: firebase.credential.cert(serviceAccount),
+    credential: firebase.credential.cert(serviceAccount),
     databaseURL: process.env.FIREBASE_DATABASE_URL,
     storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   });
