@@ -309,7 +309,7 @@ exports.createReport = async (req, res, next) => {
         .json({ status: 400, msg: "Please enter information!" });
     }
     const userData = await userModel.getById(userId);
-    data = {};
+    let data = {};
     data.userId = userId;
     data.email = userData.email;
     data.displayName = userData.displayName;

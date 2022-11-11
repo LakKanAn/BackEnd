@@ -60,10 +60,7 @@ async function postBook(userId, bookId, data) {
 }
 async function postOffer(postId, data) {
   try {
-    const addOffer = await db
-      .collection(collectionOffer)
-      .doc(postId)
-      .set(data, { merge: true });
+    await db.collection(collectionOffer).doc(postId).set(data, { merge: true });
   } catch (err) {
     console.error(err);
   }

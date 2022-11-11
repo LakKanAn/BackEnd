@@ -1,10 +1,10 @@
 const multer = require("multer");
 
 const uploadBook = multer({
-  limits: { fieldSize: 10000000 },
-  fileFilter(req, file, cb) {
+  limits: { fieldSize: 8000000 },
+  fileFilter(file, cb) {
     if (!file.originalname.match(/\.(png|jpg|jpeg|pdf)$/)) {
-      return cb(new Error("Please upload book"));
+      return cb(new Error("Please upload book or content"));
     }
     cb(null, true);
   },

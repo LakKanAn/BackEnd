@@ -65,7 +65,6 @@ exports.confirm = async (req, res, next) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       secure: false,
-      requireTLS: false,
       auth: {
         user: GMAIL,
         pass: PASSWORD,
