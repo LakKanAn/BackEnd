@@ -9,8 +9,7 @@ async function getBookAllByDistributor(distributorId) {
       .get();
     return books;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 
@@ -19,8 +18,7 @@ async function getBookAllByAdmin() {
     const totals = await db.collection(collectionName).get();
     return totals;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 
@@ -34,8 +32,7 @@ async function getBookAll(perPage, currentPage) {
       .get();
     return books;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 
@@ -46,8 +43,7 @@ async function getBookById(bookId) {
     ).data();
     return book;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 
@@ -61,8 +57,7 @@ async function getByGenre(genre, perPage, currentPage) {
       .get();
     return book;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 async function getByCategory(category, perPage, currentPage) {
@@ -75,8 +70,7 @@ async function getByCategory(category, perPage, currentPage) {
       .get();
     return book;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 async function getByCategoryAndGenre(category, genre, perPage, currentPage) {
@@ -90,8 +84,7 @@ async function getByCategoryAndGenre(category, genre, perPage, currentPage) {
       .get();
     return book;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 
@@ -106,8 +99,7 @@ async function search(bookTitle, perPage, currentPage) {
       .get();
     return book;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 
@@ -118,8 +110,7 @@ async function createBook(data) {
     newBook.create(data);
     return newBook;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 
@@ -130,21 +121,15 @@ async function updateBook(bookId, data) {
       .doc(bookId)
       .set(data, { merge: true });
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 
-async function deleteBook(distributorId, bookId) {
+async function deleteBook(bookId) {
   try {
     await db.collection(collectionName).doc(bookId).delete();
-
-    const stats = await (
-      await db.collection("stats").doc(collectionName).get()
-    ).data();
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 

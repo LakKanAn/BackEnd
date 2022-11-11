@@ -32,7 +32,6 @@ exports.create = async (req, res, next) => {
         status: 200,
         message: "successful",
         paymentId: paymentIntent.id,
-        paymentId: paymentIntent.id,
       });
     }
     if (checkBook.bookId == book.bookId) {

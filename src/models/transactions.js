@@ -7,8 +7,7 @@ async function create(data) {
     data.transactionId = transactions.id;
     transactions.set(data, { merge: true });
   } catch (err) {
-    console.log(err);
-    return null;
+    console.error(err);
   }
 }
 
@@ -21,8 +20,7 @@ async function getAll(perPage, currentPage) {
       .get();
     return book;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 
@@ -36,8 +34,7 @@ async function getByType(type, perPage, currentPage) {
       .get();
     return book;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 

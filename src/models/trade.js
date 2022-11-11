@@ -15,8 +15,7 @@ async function getAll(perPage, currentPage) {
       .get();
     return books;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 async function getById(postId) {
@@ -26,8 +25,7 @@ async function getById(postId) {
     ).data();
     return post;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 async function getOwnPostAll(userId, perPage, currentPage) {
@@ -40,8 +38,7 @@ async function getOwnPostAll(userId, perPage, currentPage) {
       .get();
     return Owner;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 async function postBook(userId, bookId, data) {
@@ -58,8 +55,7 @@ async function postBook(userId, bookId, data) {
 
     return newPost;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 async function postOffer(postId, data) {
@@ -69,8 +65,7 @@ async function postOffer(postId, data) {
       .doc(postId)
       .set(data, { merge: true });
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 async function cancelPostBook(userId, bookId, postId) {
@@ -84,8 +79,7 @@ async function cancelPostBook(userId, bookId, postId) {
     const Post = await db.collection(collectionOffer).doc(postId).delete();
     return Post;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 
@@ -120,8 +114,7 @@ async function confirm(
       .delete();
     return confirm;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 async function getOfferPost(offerUserId, offerBookId) {
@@ -133,8 +126,7 @@ async function getOfferPost(offerUserId, offerBookId) {
       .get();
     return post;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 
@@ -146,8 +138,7 @@ async function deletePost(postId) {
       .delete();
     return deletePost;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 async function getBookTradeAll(perPage, currentPage) {
@@ -159,8 +150,7 @@ async function getBookTradeAll(perPage, currentPage) {
       .get();
     return exchange;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 async function getBookTradeById(exchangeId) {
@@ -170,8 +160,7 @@ async function getBookTradeById(exchangeId) {
     ).data();
     return exchange;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 async function checkDuring(during) {
@@ -183,8 +172,7 @@ async function checkDuring(during) {
 
     return During;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 async function rollback(userId, bookId) {
@@ -196,8 +184,7 @@ async function rollback(userId, bookId) {
       .doc(bookId)
       .set({ post: false, exchange: false }, { merge: true });
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 async function deleteExchange(exchangeId) {
@@ -209,8 +196,7 @@ async function deleteExchange(exchangeId) {
 
     return deleteExchange;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 module.exports = {

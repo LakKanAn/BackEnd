@@ -7,8 +7,7 @@ async function getAll() {
     const totals = await db.collection(collectionName).get();
     return totals;
   } catch (err) {
-    console.log(err);
-    return null;
+    console.error(err);
   }
 }
 
@@ -19,7 +18,7 @@ async function getById(userId) {
     ).data();
     return user;
   } catch (err) {
-    return null;
+    console.error(err);
   }
 }
 
@@ -31,8 +30,7 @@ async function checkUser(email) {
       .get();
     return user;
   } catch (err) {
-    console.log(err);
-    return null;
+    console.error(err);
   }
 }
 
@@ -43,7 +41,7 @@ async function registration(userId, data) {
     newUser.set(data, { merge: true });
     return data;
   } catch (err) {
-    return null;
+    console.error(err);
   }
 }
 
@@ -55,7 +53,7 @@ async function updateUser(data) {
       .update(data, { merge: true });
     return data;
   } catch (err) {
-    return null;
+    console.error(err);
   }
 }
 
@@ -73,8 +71,7 @@ async function addBook(userId, bookId) {
       );
     return newBook;
   } catch (err) {
-    console.log(err);
-    return null;
+    console.error(err);
   }
 }
 
@@ -91,7 +88,7 @@ async function getBookAll(userId, perPage, currentPage) {
       .get();
     return bookshelf;
   } catch (error) {
-    return null;
+    console.error(err);
   }
 }
 
@@ -107,7 +104,7 @@ async function getBookById(userId, bookId) {
     ).data();
     return book;
   } catch (err) {
-    return null;
+    console.error(err);
   }
 }
 

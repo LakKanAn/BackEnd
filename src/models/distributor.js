@@ -6,7 +6,7 @@ async function getAll() {
     const totals = await db.collection(collectionName).get();
     return totals;
   } catch (err) {
-    return null;
+    console.error(err);
   }
 }
 
@@ -16,7 +16,9 @@ async function getById(distributorId) {
       await db.collection(collectionName).doc(distributorId).get()
     ).data();
     return distributor;
-  } catch (err) {}
+  } catch (err) {
+    console.error(err);
+  }
 }
 async function checkDistributor(email) {
   try {
@@ -26,7 +28,7 @@ async function checkDistributor(email) {
       .get();
     return user;
   } catch (err) {
-    return null;
+    console.error(err);
   }
 }
 async function registration(distributorId, data) {
@@ -37,7 +39,7 @@ async function registration(distributorId, data) {
       .set(data, { merge: true });
     return data;
   } catch (err) {
-    return null;
+    console.error(err);
   }
 }
 
