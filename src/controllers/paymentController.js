@@ -40,7 +40,6 @@ exports.create = async (req, res, next) => {
         .json({ status: 200, message: "This book you have already bought." });
     }
   } catch (error) {
-    // console.log(error);
     res.status(400).json({ status: 400, message: "Bad Request", error: error });
   }
 };
@@ -53,10 +52,9 @@ exports.confirm = async (req, res, next) => {
     const orderId = nanoid();
     const createAt = new Date();
     const user = await userModel.getById(userId);
-    const paymentIntent = await stripe.paymentIntents.confirm(
-      req.body.paymentId,
-      { payment_method: "pm_card_visa" }
-    );
+    await stripe.paymentIntents.confirm(req.body.paymentId, {
+      payment_method: "pm_card_visa",
+    });
     const book = await bookModel.getBookById(bookId);
     const data = {};
     data.userId = userId;

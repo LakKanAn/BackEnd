@@ -170,7 +170,6 @@ exports.getAllPost = async (req, res, next) => {
 };
 exports.getPostById = async (req, res, next) => {
   try {
-    const userId = req.userId;
     const postId = req.params.postId;
     const postDetail = await tradeModel.getById(postId);
     if (postDetail == undefined) {

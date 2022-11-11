@@ -4,7 +4,7 @@ const bookModel = require("../models/books");
 const userModel = require("../models/users");
 const reportModel = require("../models/reports");
 const transactionModel = require("../models/transactions");
-var validator = require("email-validator");
+const validator = require("email-validator");
 const adminUid = process.env.ADMIN_UID;
 
 exports.addDistributor = async (req, res, next) => {
@@ -69,8 +69,6 @@ exports.getDistributorAll = async (req, res, next) => {
     if (userId != adminUid) {
       return res.status(403).json({ status: 403, msg: "not a permission" });
     }
-    const perPage = parseInt(req.query.perpage) || 9;
-    const currentPage = req.query.page - 1 || 0;
     let lists = [];
     const snapshot = await distributorModel.getAll();
     snapshot.forEach((doc) => {
@@ -169,12 +167,7 @@ exports.getTotalUser = async (req, res, next) => {
     if (userId != adminUid) {
       return res.status(403).json({ status: 403, msg: "not a permission" });
     }
-    let lists = [];
     const snapshot = await userModel.getAll();
-    snapshot.forEach((doc) => {
-      let data = doc.data();
-      lists.push({ ...data, id: doc.id });
-    });
     const countDoc = snapshot.size;
 
     res.status(200).json({
@@ -226,12 +219,7 @@ exports.getTotalDistributor = async (req, res, next) => {
     if (userId != adminUid) {
       return res.status(403).json({ status: 403, msg: "not a permission" });
     }
-    let lists = [];
     const snapshot = await distributorModel.getAll();
-    snapshot.forEach((doc) => {
-      let data = doc.data();
-      lists.push({ ...data, id: doc.id });
-    });
     const countDoc = snapshot.size;
 
     res.status(200).json({

@@ -44,7 +44,7 @@ paths:
           description: OK
         "401":
           description: You do not have necessary permissions for the resource
-  /v1/distributor/books/:
+  /v1/distributor/books:
     get:
       security:
         - Bearer: []
@@ -104,4 +104,3 @@ paths:
           description: OK
         "401":
           description: You do not have necessary permissions for the resource
-

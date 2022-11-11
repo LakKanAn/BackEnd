@@ -184,9 +184,9 @@ exports.getByCategoryAndGenre = async (req, res, next) => {
     }
 
     if (books.length === 0 || (genre === undefined && category === undefined)) {
-      return res.status(404).json({ status: 404, msg: "Don't have any book" });
+      res.status(404).json({ status: 404, msg: "Don't have any book" });
     } else if (books.release === false) {
-      return res.status(404).json({ status: 404, msg: "Don't have any book" });
+      res.status(404).json({ status: 404, msg: "Don't have any book" });
     }
   } catch (error) {
     if (!error.statusCode) {

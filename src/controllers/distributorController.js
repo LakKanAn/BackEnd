@@ -162,7 +162,6 @@ exports.getById = async (req, res, next) => {
     }
     const bookId = req.params.bookId;
     const book = await bookModel.getBookById(bookId);
-    // const bookImage = book.bookImage;
     const bookImage = await minioService.getCoverBook(book.bookImage);
     if (!book) {
       res.status(404).json({ status: 404, msg: "Don'y have any book" });
