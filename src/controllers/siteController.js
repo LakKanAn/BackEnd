@@ -4,6 +4,7 @@ const userModel = require("../models/users");
 const distributorModel = require("../models/distributor");
 const SECRET = process.env.SITE_TOKEN;
 const adminUid = process.env.ADMIN_UID;
+const adminUid_prd = process.env.ADMIN_UID_PRD;
 exports.access_token = async (req, res, next) => {
   const token = req.body.token;
   if (token !== undefined) {
@@ -55,7 +56,7 @@ exports.me = async (req, res, next) => {
           .status(200)
           .json({ status: 200, distributor: distributorData });
       }
-      if (user.uid == adminUid) {
+      if (user.uid == adminUid || user.uid == adminUid_prd) {
         const adminData = {
           uid: user.uid,
           email: user.email,
