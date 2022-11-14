@@ -194,7 +194,7 @@ exports.Offer = async (req, res, next) => {
         .json({ status: 200, msg: "You can't not exchange your book" });
     }
     let offerData = {};
-    for (const [key, value] of Object.entries(postDetail.offers)) {
+    for (const [value] of Object.entries(postDetail.offers)) {
       offerData.BookId = value["offer_bookId"];
       offerData.userId = value["userId"];
     }

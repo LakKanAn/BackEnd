@@ -16,6 +16,13 @@ app.use(
   })
 );
 
+// docs API
+if (process.env.NODE_ENV == "development") {
+  const swaggerUi = require("swagger-ui-express");
+  const swaggerSpec = require("./configuration/swagger");
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+}
+
 // route
 const siteRouter = require("./routes/site");
 const userRouter = require("./routes/user");

@@ -1,0 +1,106 @@
+paths:
+  /v1/distributor/registration:
+    post:
+      tags:
+        - distributor
+      summary: registration new distributor
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: type of value [email, distributorId, displayName]
+          required: true
+          properties:
+            email:
+              type: string
+              example: ...@gmail.com
+            userId:
+              type: string
+              example: kchq33423
+            displayName:
+              type: string
+              example: somchai
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/distributor/info:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - distributor
+      summary: Information of usdistributorer (Get an distributor with token)
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/distributor/books:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - book management
+      summary: book management of distributor (Get book all by distributor)
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/distributor/books/{bookId}:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - user
+      summary: book management of distributor (Get book by bookId by distributor)
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      parameters:
+        - in: path
+          name: bookId
+          description: ID of book to return
+          required: true
+          type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/distributor/books/:
+    post:
+      security:
+        - Bearer: []
+      tags:
+        - book management
+      summary: book management of distributor (Get book by bookId by distributor)
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      parameters:
+        - in: path
+          name: bookId
+          description: ID of book to return
+          required: true
+          type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource

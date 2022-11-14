@@ -8,8 +8,7 @@ async function createReport(data) {
     newReport.create(data);
     return newReport;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 async function getAll(perPage, currentPage) {
@@ -21,8 +20,7 @@ async function getAll(perPage, currentPage) {
       .get();
     return reports;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 async function getById(reportId) {
@@ -32,8 +30,7 @@ async function getById(reportId) {
     ).data();
     return report;
   } catch (err) {
-    console.log(err);
-    null;
+    console.error(err);
   }
 }
 module.exports = {

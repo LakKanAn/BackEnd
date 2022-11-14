@@ -170,7 +170,6 @@ exports.getAllPost = async (req, res, next) => {
 };
 exports.getPostById = async (req, res, next) => {
   try {
-    const userId = req.userId;
     const postId = req.params.postId;
     const postDetail = await tradeModel.getById(postId);
     if (postDetail == undefined) {
@@ -310,7 +309,7 @@ exports.createReport = async (req, res, next) => {
         .json({ status: 400, msg: "Please enter information!" });
     }
     const userData = await userModel.getById(userId);
-    data = {};
+    let data = {};
     data.userId = userId;
     data.email = userData.email;
     data.displayName = userData.displayName;

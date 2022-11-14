@@ -1,0 +1,213 @@
+paths:
+  /v1/users/registration:
+    post:
+      tags:
+        - user
+      summary: registration new user
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: type of value [email, userId, displayName]
+          required: true
+          properties:
+            email:
+              type: string
+              example: ...@gmail.com
+            userId:
+              type: string
+              example: kchq33423
+            displayName:
+              type: string
+              example: somchai
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/users/bookshelf:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - user
+      summary: bookshelf of user (Get all book by user)
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/users/bookshelf/{bookId}:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - user
+      summary: bookshelf of user (Get book by bookId by user)
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      parameters:
+        - in: path
+          name: bookId
+          description: ID of book to return
+          required: true
+          type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/users/bookpost:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - user
+      summary: bookpost of user (Get all book by user when user post book for exchange.)
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/users/bookpost/{postId}:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - user
+      summary: bookpost of user (Get book by postId by user when user post book for exchange.)
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      parameters:
+        - in: path
+          name: postId
+          description: ID of post to return
+          required: true
+          type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/users/booktrade:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - user
+      summary: booktrade of user (Get all book by user when user exchange book with another user already.)
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/users/booktrade/{exchangeId}:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - user
+      summary: booktrade of user (Get book by exchangeId by user when user exchange book with another user already.)
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      parameters:
+        - in: path
+          name: exchangeId
+          description: ID of exchange to return
+          required: true
+          type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/users/bookshelf/{bookId}/post:
+    post:
+      security:
+        - Bearer: []
+      tags:
+        - user
+      summary: add new post book for exchange by user
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      parameters:
+        - in: path
+          name: bookId
+          description: ID of book to return
+          required: true
+          type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/users/bookshelf/{postId}/cancel:
+    post:
+      security:
+        - Bearer: []
+      tags:
+        - user
+      summary: cancel post book for exchange by user
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      parameters:
+        - in: path
+          name: postId
+          description: ID of post to return
+          required: true
+          type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/users/report:
+    post:
+      security:
+        - Bearer: []
+      tags:
+        - user
+      summary: add new report by user
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          required: true
+          properties:
+            topic:
+              type: string
+            details:
+              type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
