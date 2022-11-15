@@ -3,7 +3,7 @@ paths:
     post:
       tags:
         - user
-      summary: registration new user
+      summary: registration of a new user first time
       produces:
         - application/json
         - application/bjson

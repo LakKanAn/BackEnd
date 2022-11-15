@@ -28,6 +28,18 @@ const swaggerDefinition = {
       name: "book management",
       description: "API book management for distributor in the system",
     },
+    {
+      name: "market",
+      description: "API marketplace in the system",
+    },
+    {
+      name: "payment",
+      description: "API payment in the system",
+    },
+    {
+      name: "admin",
+      description: "API for admin in the system",
+    },
   ],
   schemes: ["http", "https"],
   consumes: ["application/json"],

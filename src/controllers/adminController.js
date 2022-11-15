@@ -6,11 +6,15 @@ const reportModel = require("../models/reports");
 const transactionModel = require("../models/transactions");
 const validator = require("email-validator");
 const adminUid = process.env.ADMIN_UID;
-
+const adminUid_prd = process.env.ADMIN_UID_PRD;
 exports.addDistributor = async (req, res, next) => {
   try {
     const userId = req.userId;
-    if (userId != adminUid) {
+    if (process.env.NODE_ENV == "production") {
+      if (userId != adminUid_prd) {
+        return res.status(403).json({ status: 403, msg: "not a permission" });
+      }
+    } else if (userId != adminUid) {
       return res.status(403).json({ status: 403, msg: "not a permission" });
     }
     const email = req.body.email;
