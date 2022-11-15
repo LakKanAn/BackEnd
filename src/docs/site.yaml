@@ -1,0 +1,52 @@
+paths:
+  /v1/site/access_token:
+    post:
+      tags:
+        - site
+      summary: Get a token from Verifies a Firebase ID token and convert it to jsonwebtoken
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      parameters:
+        - in: body
+          name: token
+          description: type of value [token]
+          required: true
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/site/me:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - site
+      summary: Get Information from authentication for permission
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/site/bye:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - site
+      summary: response when user, distributor, admin logout
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource

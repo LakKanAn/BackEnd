@@ -1,0 +1,168 @@
+paths:
+  /v1/admin/addDistributor:
+    post:
+      tags:
+        - admin
+      summary: add information of distributor by admin
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: type of value [email, distributorId, displayName]
+          required: true
+          properties:
+            email:
+              type: string
+              example: ...@gmail.com
+            userId:
+              type: string
+              example: kchq33423
+            displayName:
+              type: string
+              example: somchai
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/users/distributors:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - admin
+      summary: dashboard of admin (Get distributors all by admin )
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/users/transactions:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - admin
+      summary: dashboard of admin (Get transactions all by admin )
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/users/transactions/type:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - admin
+      summary: dashboard of admin (Get transactions by type by admin )
+      parameters:
+        - in: query
+          name: type
+          description: type of transactions
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/users/totalUser:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - admin
+      summary: dashboard of admin (Get total of user by admin )
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/users/totalBook:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - admin
+      summary: dashboard of admin (Get total of book by admin )
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/users/totalDistributor:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - admin
+      summary: dashboard of admin (Get total of distributor by admin )
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/users/reports:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - admin
+      summary: dashboard of admin (Get report all from user by admin )
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/users/reports/{reportId}:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - admin
+      summary: dashboard of admin (Get report by Id from user by admin)
+      parameters:
+        - in: path
+          name: reportId
+          description: ID of report to return
+          required: true
+          type: string
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource

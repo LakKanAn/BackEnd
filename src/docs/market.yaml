@@ -1,0 +1,71 @@
+paths:
+  /v1/market/:
+    get:
+      tags:
+        - market
+      summary: market of user (Get book for sell all)
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/market/filter:
+    get:
+      tags:
+        - market
+      summary: market of user (Get book for sell all by filter)
+      parameters:
+        - in: query
+          name: filter
+          description: filter book by category or genre
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/market/search:
+    get:
+      tags:
+        - market
+      summary: market of user (Get book for sell by search)
+      parameters:
+        - in: query
+          name: bookTitle
+          description: search book by bookTitle
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/market/{bookId}:
+    get:
+      tags:
+        - market
+      summary: market of user (Get book for sell by bookId)
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      parameters:
+        - in: path
+          name: bookId
+          description: ID of book to return
+          required: true
+          type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource

@@ -1,0 +1,45 @@
+paths:
+  /v1/payment/create/{bookId}:
+    post:
+      security:
+        - Bearer: []
+      tags:
+        - payment
+      summary: create the payment to buy the book
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      parameters:
+        - in: path
+          name: bookId
+          description: ID of book to return
+          required: true
+          type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/payment/confirm/{bookId}:
+    put:
+      security:
+        - Bearer: []
+      tags:
+        - payment
+      summary: confirm the payment to buy the book
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      parameters:
+        - in: path
+          name: bookId
+          description: ID of book to return
+          required: true
+          type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource

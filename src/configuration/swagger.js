@@ -17,6 +17,10 @@ const swaggerDefinition = {
   basePath: "/", // the basepath of your endpoint
   tags: [
     {
+      name: "site",
+      description: "API for authorization in the system",
+    },
+    {
       name: "user",
       description: "API for User in the system",
     },
@@ -35,6 +39,10 @@ const swaggerDefinition = {
     {
       name: "payment",
       description: "API payment in the system",
+    },
+    {
+      name: "trade",
+      description: "API for exchanging in the system",
     },
     {
       name: "admin",
