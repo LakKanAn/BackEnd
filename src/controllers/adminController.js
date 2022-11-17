@@ -14,8 +14,10 @@ exports.addDistributor = async (req, res, next) => {
       if (userId != adminUid_prd) {
         return res.status(403).json({ status: 403, msg: "not a permission" });
       }
-    } else if (userId != adminUid) {
-      return res.status(403).json({ status: 403, msg: "not a permission" });
+    } else if (process.env.NODE_ENV == "development") {
+      if (userId != adminUid) {
+        return res.status(403).json({ status: 403, msg: "not a permission" });
+      }
     }
     const email = req.body.email;
     const password = req.body.password;
@@ -70,8 +72,14 @@ exports.addDistributor = async (req, res, next) => {
 exports.getDistributorAll = async (req, res, next) => {
   try {
     const userId = req.userId;
-    if (userId != adminUid) {
-      return res.status(403).json({ status: 403, msg: "not a permission" });
+    if (process.env.NODE_ENV == "production") {
+      if (userId != adminUid_prd) {
+        return res.status(403).json({ status: 403, msg: "not a permission" });
+      }
+    } else if (process.env.NODE_ENV == "development") {
+      if (userId != adminUid) {
+        return res.status(403).json({ status: 403, msg: "not a permission" });
+      }
     }
     let lists = [];
     const snapshot = await distributorModel.getAll();
@@ -95,8 +103,14 @@ exports.getDistributorAll = async (req, res, next) => {
 exports.getTransactionAll = async (req, res, next) => {
   try {
     const userId = req.userId;
-    if (userId != adminUid) {
-      return res.status(403).json({ status: 403, msg: "not a permission" });
+    if (process.env.NODE_ENV == "production") {
+      if (userId != adminUid_prd) {
+        return res.status(403).json({ status: 403, msg: "not a permission" });
+      }
+    } else if (process.env.NODE_ENV == "development") {
+      if (userId != adminUid) {
+        return res.status(403).json({ status: 403, msg: "not a permission" });
+      }
     }
     const perPage = parseInt(req.query.perpage) || 9;
     const currentPage = req.query.page - 1 || 0;
@@ -129,8 +143,14 @@ exports.getTransactionAll = async (req, res, next) => {
 exports.getTransactionByType = async (req, res, next) => {
   try {
     const userId = req.userId;
-    if (userId != adminUid) {
-      return res.status(403).json({ status: 403, msg: "not a permission" });
+    if (process.env.NODE_ENV == "production") {
+      if (userId != adminUid_prd) {
+        return res.status(403).json({ status: 403, msg: "not a permission" });
+      }
+    } else if (process.env.NODE_ENV == "development") {
+      if (userId != adminUid) {
+        return res.status(403).json({ status: 403, msg: "not a permission" });
+      }
     }
     const type = req.query.type;
     const perPage = parseInt(req.query.perpage) || 9;
@@ -168,8 +188,14 @@ exports.getTransactionByType = async (req, res, next) => {
 exports.getTotalUser = async (req, res, next) => {
   try {
     const userId = req.userId;
-    if (userId != adminUid) {
-      return res.status(403).json({ status: 403, msg: "not a permission" });
+    if (process.env.NODE_ENV == "production") {
+      if (userId != adminUid_prd) {
+        return res.status(403).json({ status: 403, msg: "not a permission" });
+      }
+    } else if (process.env.NODE_ENV == "development") {
+      if (userId != adminUid) {
+        return res.status(403).json({ status: 403, msg: "not a permission" });
+      }
     }
     const snapshot = await userModel.getAll();
     const countDoc = snapshot.size;
@@ -189,8 +215,14 @@ exports.getTotalUser = async (req, res, next) => {
 exports.getTotalBook = async (req, res, next) => {
   try {
     const userId = req.userId;
-    if (userId != adminUid) {
-      return res.status(403).json({ status: 403, msg: "not a permission" });
+    if (process.env.NODE_ENV == "production") {
+      if (userId != adminUid_prd) {
+        return res.status(403).json({ status: 403, msg: "not a permission" });
+      }
+    } else if (process.env.NODE_ENV == "development") {
+      if (userId != adminUid) {
+        return res.status(403).json({ status: 403, msg: "not a permission" });
+      }
     }
     let lists = [];
     const snapshot = await bookModel.getBookAllByAdmin();
@@ -220,8 +252,14 @@ exports.getTotalBook = async (req, res, next) => {
 exports.getTotalDistributor = async (req, res, next) => {
   try {
     const userId = req.userId;
-    if (userId != adminUid) {
-      return res.status(403).json({ status: 403, msg: "not a permission" });
+    if (process.env.NODE_ENV == "production") {
+      if (userId != adminUid_prd) {
+        return res.status(403).json({ status: 403, msg: "not a permission" });
+      }
+    } else if (process.env.NODE_ENV == "development") {
+      if (userId != adminUid) {
+        return res.status(403).json({ status: 403, msg: "not a permission" });
+      }
     }
     const snapshot = await distributorModel.getAll();
     const countDoc = snapshot.size;
@@ -241,8 +279,14 @@ exports.getTotalDistributor = async (req, res, next) => {
 exports.getReportAll = async (req, res, next) => {
   try {
     const userId = req.userId;
-    if (userId != adminUid) {
-      return res.status(403).json({ status: 403, msg: "not a permission" });
+    if (process.env.NODE_ENV == "production") {
+      if (userId != adminUid_prd) {
+        return res.status(403).json({ status: 403, msg: "not a permission" });
+      }
+    } else if (process.env.NODE_ENV == "development") {
+      if (userId != adminUid) {
+        return res.status(403).json({ status: 403, msg: "not a permission" });
+      }
     }
     const perPage = parseInt(req.query.perpage) || 9;
     const currentPage = req.query.page - 1 || 0;
@@ -276,8 +320,14 @@ exports.getReportById = async (req, res, next) => {
   try {
     const reportId = req.params.reportId;
     const userId = req.userId;
-    if (userId != adminUid) {
-      return res.status(403).json({ status: 403, msg: "not a permission" });
+    if (process.env.NODE_ENV == "production") {
+      if (userId != adminUid_prd) {
+        return res.status(403).json({ status: 403, msg: "not a permission" });
+      }
+    } else if (process.env.NODE_ENV == "development") {
+      if (userId != adminUid) {
+        return res.status(403).json({ status: 403, msg: "not a permission" });
+      }
     }
     const report = await reportModel.getById(reportId);
     if (!report) {

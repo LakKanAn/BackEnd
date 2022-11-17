@@ -1,0 +1,90 @@
+paths:
+  /v1/trade/:
+    get:
+      tags:
+        - trade
+      summary: exchanging book of user (Get a book for exchange all)
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/trade/confirm/{postId}/{offerId}:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - trade
+      summary: exchanging book of user (when the owner posts the book and confirms for exchange with the offer from another user.)
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      parameters:
+        - in: path
+          name: postId
+          description: ID of post to return
+          required: true
+          type: string
+        - in: path
+          name: offerId
+          description: ID of offer to return
+          required: true
+          type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+  /v1/trade/{postId}:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - trade
+      summary: exchanging book of user (Get post by postId by user)
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      parameters:
+        - in: path
+          name: postId
+          description: ID of post to return
+          required: true
+          type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
+    post:
+      security:
+        - Bearer: []
+      tags:
+        - trade
+      summary: add new offer in post book for exchange by user
+      produces:
+        - application/json
+        - application/bjson
+        - application/xml
+      parameters:
+        - in: path
+          name: postId
+          description: ID of post to return
+          required: true
+          type: string
+        - in: body
+          name: bookId
+          description: ID of book to return
+          required: true
+          type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You do not have necessary permissions for the resource
