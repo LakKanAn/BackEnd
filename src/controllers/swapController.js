@@ -9,17 +9,13 @@ const { firestore } = require("../../db/db");
 
 exports.getAll = async (req, res, next) => {
   try {
-    const perPage = parseInt(req.query.perpage) || 9;
-    const currentPage = req.query.page - 1 || 0;
     let books = [];
     let bookImages = [];
-    const snapshot = await tradeModel.getAll(perPage, currentPage);
+    const snapshot = await tradeModel.getAll();
     snapshot.forEach((doc) => {
       let data = doc.data();
       books.push({ ...data });
     });
-    const countDoc = snapshot.size;
-    let totalPage = Math.ceil(countDoc / perPage);
     let bookDetail = [];
     for (let i = 0; i < books.length; i++) {
       let book = await bookModel.getBookById(books[i].owner_bookId);
@@ -37,11 +33,6 @@ exports.getAll = async (req, res, next) => {
     res.status(200).json({
       status: 200,
       books: bookDetail,
-      config: {
-        currentPage: currentPage + 1,
-        perPage: parseInt(req.query.perpage) || perPage,
-        totalPage: totalPage,
-      },
     });
   } catch (error) {
     if (!error.statusCode) {

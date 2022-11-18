@@ -22,13 +22,11 @@ async function getBookAllByAdmin() {
   }
 }
 
-async function getBookAll(perPage, currentPage) {
+async function getBookAll() {
   try {
     const books = await db
       .collection(collectionName)
       .where("release", "==", true)
-      .limit(perPage)
-      .offset(currentPage * perPage)
       .get();
     return books;
   } catch (err) {
@@ -47,40 +45,34 @@ async function getBookById(bookId) {
   }
 }
 
-async function getByGenre(genre, perPage, currentPage) {
+async function getByGenre(genre) {
   try {
     const book = await db
       .collection(collectionName)
       .where("genre", "array-contains-any", genre)
-      .limit(perPage)
-      .offset(currentPage * perPage)
       .get();
     return book;
   } catch (err) {
     console.error(err);
   }
 }
-async function getByCategory(category, perPage, currentPage) {
+async function getByCategory(category) {
   try {
     const book = await db
       .collection(collectionName)
       .where("category", "==", category)
-      .limit(perPage)
-      .offset(currentPage * perPage)
       .get();
     return book;
   } catch (err) {
     console.error(err);
   }
 }
-async function getByCategoryAndGenre(category, genre, perPage, currentPage) {
+async function getByCategoryAndGenre(category, genre) {
   try {
     const book = await db
       .collection(collectionName)
       .where("category", "==", category)
       .where("genre", "array-contains-any", genre)
-      .limit(perPage)
-      .offset(currentPage * perPage)
       .get();
     return book;
   } catch (err) {
@@ -88,14 +80,12 @@ async function getByCategoryAndGenre(category, genre, perPage, currentPage) {
   }
 }
 
-async function search(bookTitle, perPage, currentPage) {
+async function search(bookTitle) {
   try {
     const book = await db
       .collection(collectionName)
       .where("bookTitle", ">=", bookTitle)
       .orderBy("bookTitle", "asc")
-      .limit(perPage)
-      .offset(currentPage * perPage)
       .get();
     return book;
   } catch (err) {

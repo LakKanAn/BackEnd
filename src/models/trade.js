@@ -6,13 +6,9 @@ const collectionExchange = "exchange";
 const collectionUsers = "users";
 const collectionBookshelf = "bookshelf";
 
-async function getAll(perPage, currentPage) {
+async function getAll() {
   try {
-    const books = await db
-      .collection(collectionOffer)
-      .limit(perPage)
-      .offset(currentPage * perPage)
-      .get();
+    const books = await db.collection(collectionOffer).get();
     return books;
   } catch (err) {
     console.error(err);
