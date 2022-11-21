@@ -222,9 +222,9 @@ exports.delete = async (req, res, next) => {
     const bookId = req.params.bookId;
     const book = await bookModel.getBookById(bookId);
     if (!book) {
-      res.status(404).json({ status: 404, msg: "Don'y have any book" });
+      res.status(404).json({ status: 404, msg: "Don't have any book" });
     } else {
-      await bookModel.deleteBook(distributorId, bookId);
+      await bookModel.deleteBook(bookId);
       res.status(202).json({
         status: 202,
         msg: "Delete successful",
